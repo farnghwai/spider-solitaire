@@ -1,3 +1,18 @@
+VS Code Extensions
+1. PrettierPrettier - Code formatter
+2. Svelte for VS Code
+3. Tailwind CSS IntelliSense
+
+VS Code Workspace Configuration
+```json
+{
+    "[svelte]": {
+        "editor.defaultFormatter": "svelte.svelte-vscode",
+        "editor.formatOnSave": true
+    },
+}
+```
+
 # sv
 
 Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).

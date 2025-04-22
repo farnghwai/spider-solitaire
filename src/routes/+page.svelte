@@ -1,5 +1,6 @@
 <script>
 	import { onMount } from 'svelte';
+	import CardSystem from '$lib/components/CardSystem.svelte';
 
 	import Card from '$lib/components/Card.svelte';
 	import CheckmarkButton from '$lib/components/CheckmarkButton.svelte';
@@ -76,6 +77,10 @@
 		drawPile.style.transform = 'scale(0.95)';
 		setTimeout(() => {}, 100);
 	}
+
+	function handleCardUpdate(newCards) {
+		displayedCards = newCards;
+	}
 </script>
 
 <div class="flex min-h-screen flex-col bg-green-800 text-white select-none">
@@ -84,11 +89,12 @@
 		<div class="absolute top-2.5 left-2.5 text-sm">{timer}</div>
 
 		<!-- Top Row Cards -->
-		<div class="mb-5 flex justify-center gap-2">
+		<!-- <div class="mb-5 flex justify-center gap-2">
 			{#each displayedCards as card}
 				<Card {card} on:click={handleCardClick} />
 			{/each}
-		</div>
+		</div> -->
+		<CardSystem {displayedCards} onUpdate={handleCardUpdate} onClick={handleCardClick} />
 
 		<!-- Draw Pile -->
 		<DrawPile handleDrawPileClick />
