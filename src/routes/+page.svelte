@@ -1,6 +1,8 @@
-<script>
+<script lang="ts">
 	import { onMount } from 'svelte';
 	import CardSystem from '$lib/components/CardSystem.svelte';
+	import { cardStacks, CardValues, getCartSuitKeys } from '$lib/components/shared.svelte';
+	import type { CardType, CartSuitKeyType } from '$lib/components/shared.svelte';
 
 	import Card from '$lib/components/Card.svelte';
 	import CheckmarkButton from '$lib/components/CheckmarkButton.svelte';
@@ -11,7 +13,7 @@
 	// reference: https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
 	// suggest by ChatGPT GPT-4o
 	// Shuffle the array using Fisher-Yates algorithm
-	function shuffleArray(array) {
+	function shuffleArray<T>(array: Array<T>) {
 		const arr = [...array];
 		for (let i = arr.length - 1; i > 0; i--) {
 			const j = Math.floor(Math.random() * (i + 1));
@@ -20,7 +22,7 @@
 		return arr;
 	}
 
-	function pickCards(array, noOfCards) {
+	function pickCards<T>(array: Array<T>, noOfCards: number) {
 		//ratio = 0.6) {
 		const shuffled = shuffleArray(array);
 		// const splitIndex = Math.floor(shuffled.length * ratio);
@@ -32,24 +34,21 @@
 		};
 	}
 
-	// Cards data
-	const suits = ['spade', 'heart', 'diamond', 'club'];
-	const values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+	const randomSuits = shuffleArray(getCartSuitKeys()).slice(0, 2) as CartSuitKeyType[];
 
-	const randomSuits = shuffleArray(suits).slice(0, 2);
-
-	const cardsData = [];
+	const cardsData: CardType[] = [];
 	// generate total 6 set of cards based on 2 suits
 	for (let i = 0; i < 3; i++) {
 		for (const suit of randomSuits) {
-			for (const value of values) {
+			for (const value of CardValues) {
 				cardsData.push({ value, suit });
 			}
 		}
 	}
 
-	let displayedCards = $state([]);
-	let remainingCards = $state([]);
+	const emptyCardType: CardType[] = [];
+	let displayedCards: CardType[] = $state([...emptyCardType]);
+	let remainingCards = $state([...emptyCardType]);
 	const topN = 10;
 
 	onMount(() => {
@@ -57,6 +56,16 @@
 		const pickResuts = pickCards(cardsData, topN);
 		displayedCards = [...pickResuts.picked];
 		remainingCards = [...pickResuts.remaining];
+
+		cardStacks.forEach((card, index: number) => {
+			const dcard = displayedCards[index];
+			// const nextIndex = index === displayedCards.length - 1 ? 0 : index + 1;
+			// const dcard2 = { ...dcard, value: displayedCards[nextIndex].value };
+			// newcardStacks.push([...card, dcard, dcard2]);
+			//newcardStacks.push([...card, dcard]);
+			card.push(dcard);
+			// $inspect('current card', index, card, displayedCards[index]);
+		});
 	});
 
 	// Timer state
@@ -94,7 +103,7 @@
 				<Card {card} on:click={handleCardClick} />
 			{/each}
 		</div> -->
-		<CardSystem {displayedCards} onUpdate={handleCardUpdate} onClick={handleCardClick} />
+		<CardSystem onUpdate={handleCardUpdate} onClick={handleCardClick} />
 
 		<!-- Draw Pile -->
 		<DrawPile handleDrawPileClick />
