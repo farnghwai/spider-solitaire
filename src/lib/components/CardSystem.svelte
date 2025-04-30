@@ -65,10 +65,24 @@
 				oldCardStack.splice(draggedStackPosition, cardsToMove.length);
 
 				if (oldCardStack.length > 0) {
-					const oldCardStackLastPosition = oldCardStack.length - 1;
+					// const oldCardStackLastPosition = oldCardStack.length - 1;
 
-					const oldLastCard = oldCardStack[oldCardStackLastPosition];
-					oldLastCard.isDraggable = true;
+					// const oldLastCard = oldCardStack[oldCardStackLastPosition];
+					// oldLastCard.isDraggable = true;
+
+					const currentStackCount = oldCardStack.length;
+					let currentStackLastCard = oldCardStack[currentStackCount - 1];
+					currentStackLastCard.isDraggable = true;
+					for (let i = currentStackCount - 1; i >= 0; i--) {
+						const currentStackCard = oldCardStack[i];
+						if (
+							!currentStackCard.isDraggable &&
+							currentStackCard.valueIndex - 1 === currentStackLastCard.valueIndex
+						) {
+							currentStackCard.isDraggable = true;
+						}
+						currentStackLastCard = { ...currentStackCard };
+					}
 				}
 			}
 		}

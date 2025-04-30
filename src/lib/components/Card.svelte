@@ -16,7 +16,7 @@
 	const suitSymbol = $derived(CardSuit[card.suit].icon);
 	const cardEdgeColor = $derived(
 		card.isDraggable
-			? '#16d3c5, #16d3c5 3px, white 6px'
+			? '#ff9999, #ff9999 3px, white 3px, #16d3c5 6px'
 			: '#ff9999, #ff9999 3px, white 3px, white 6px'
 	);
 
@@ -48,11 +48,13 @@
 		draggable={card.isDraggable}
 		ondragstart={handleDragStart}
 		ondragend={handleDragEnd}
+		in:fly={{ y: 20, duration: 300 }}
 	>
 		<div
-			class="h-[6px] w-full rounded-t-md"
-			style={`background: repeating-linear-gradient(90deg, ${cardEdgeColor});`}
+			class={['h-1.5 w-full rounded-t-md', card.isDraggable && 'border-t-2 border-t-teal-400']}
+			style="background: repeating-linear-gradient(90deg, #ff9999, #ff9999 3px, white 3px, white 6px);"
 		></div>
+
 		<div class="flex justify-between px-2 text-xl">
 			<div class=" font-bold">{card.value}</div>
 			<div class=" font-bold">{suitSymbol}</div>
@@ -61,8 +63,8 @@
 			{suitSymbol}
 		</div>
 		<div
-			class="h-[6px] w-full rounded-b-md"
-			style={`background: repeating-linear-gradient(90deg, ${cardEdgeColor});`}
+			class="h-1.5 w-full rounded-b-md"
+			style="background: repeating-linear-gradient(90deg, #ff9999, #ff9999 3px, white 3px, white 6px);"
 		></div>
 		<!-- Regular Card Styling -->
 	</div>

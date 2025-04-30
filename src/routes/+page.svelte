@@ -12,7 +12,7 @@
 	import Card from '$lib/components/Card.svelte';
 	import CheckmarkButton from '$lib/components/CheckmarkButton.svelte';
 	import StarButton from '$lib/components/StarButton.svelte';
-	import DrawPile from '$lib/components/DrawPile.svelte';
+	import DrawPileButton from '$lib/components/DrawPileButton.svelte';
 	import Toolbar from '$lib/components/Toolbar.svelte';
 
 	// reference: https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
@@ -79,7 +79,19 @@
 				}
 				card.push(dcard);
 			}
-			// $inspect('current card', index, card, displayedCards[index]);
+
+			const currentStackCount = card.length;
+			let currentStackLastCard = card[currentStackCount - 1];
+			for (let i = currentStackCount - 1; i >= 0; i--) {
+				const currentStackCard = card[i];
+				if (
+					!currentStackCard.isDraggable &&
+					currentStackCard.valueIndex - 1 === currentStackLastCard.valueIndex
+				) {
+					currentStackCard.isDraggable = true;
+				}
+				currentStackLastCard = { ...currentStackCard };
+			}
 		});
 	});
 
@@ -96,11 +108,38 @@
 	// }
 
 	// // Function to handle draw pile click
-	// function handleDrawPileClick(event) {
-	// 	const drawPile = event.currentTarget;
-	// 	drawPile.style.transform = 'scale(0.95)';
-	// 	setTimeout(() => {}, 100);
-	// }
+	function handleDrawPileClick(event: MouseEvent) {
+		const remaingCount =
+			remainingCards.length < NO_OF_CARD_SLOT ? remainingCards.length : NO_OF_CARD_SLOT;
+		const piles = remainingCards.splice(0, remaingCount);
+
+		piles.forEach((pcard, index) => {
+			const currentStack = cardStacks[index];
+			const currentStackCount = currentStack.length;
+
+			pcard.isDraggable = true;
+			currentStack.push(pcard);
+
+			if (currentStackCount > 0) {
+				let currentStackLastCard = pcard;
+				let currentStackCard = currentStack[currentStackCount - 1];
+				if (
+					currentStackCard.isDraggable &&
+					currentStackCard.valueIndex - 1 !== currentStackLastCard.valueIndex
+				) {
+					currentStackCard.isDraggable = false;
+				}
+				if (!currentStackCard.isDraggable) {
+					for (let i = currentStackCount - 2; i >= 0; i--) {
+						currentStackCard = currentStack[i];
+						if (currentStackCard.isDraggable) {
+							currentStackCard.isDraggable = false;
+						}
+					}
+				}
+			}
+		});
+	}
 
 	// function handleCardUpdate(newCards) {
 	// 	displayedCards = newCards;
@@ -121,8 +160,9 @@
 		<CardSystem />
 
 		<!-- Draw Pile -->
-		<DrawPile handleDrawPileClick />
-
+		{#if remainingCards.length > 0}
+			<DrawPileButton onClick={handleDrawPileClick} remaingCount={remainingCards.length} />
+		{/if}
 		<!-- Checkmark Button -->
 		<!-- <CheckmarkButton /> -->
 
