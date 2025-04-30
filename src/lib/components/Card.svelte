@@ -2,55 +2,29 @@
 <script lang="ts">
 	import { fly } from 'svelte/transition';
 
-	import { CartSuit } from './shared.svelte';
+	import { CardSuit, CardColors } from './shared.svelte';
 	import type { CardProps } from './shared.svelte';
 
 	// Modern Svelte 5 props
-	let { card, index, isDragOver, stackPosition, onCardClick, onDragStart, onDragEnd }: CardProps =
-		$props();
+	let { card, index, isDragOver, stackPosition, onDragStart, onDragEnd }: CardProps = $props();
 
 	// Local state using Svelte 5 reactivity
-	let isBeingDragged = $state(false);
 	let element;
 
 	// Stack offset calculator using Svelte 5 derived values
 	const stackOffset = $derived(stackPosition * 9);
-
-	let suitSymbol = card.suit in CartSuit ? CartSuit[card.suit] : CartSuit.club;
-	// Lifecycle hook using Svelte 5 effect
-	// $effect(() => {
-	// 	if (element) {
-	// 		element.addEventListener('dragstart', handleDragStart);
-	// 		element.addEventListener('dragend', handleDragEnd);
-
-	// 		return () => {
-	// 			element.removeEventListener('dragstart', handleDragStart);
-	// 			element.removeEventListener('dragend', handleDragEnd);
-	// 		};
-	// 	}
-	// });
+	const suitSymbol = $derived(CardSuit[card.suit].icon);
+	const cardEdgeColor = $derived(
+		card.isDraggable
+			? '#16d3c5, #16d3c5 3px, white 6px'
+			: '#ff9999, #ff9999 3px, white 3px, white 6px'
+	);
 
 	function handleDragStart(event: DragEvent) {
-		isBeingDragged = true;
-		// Set data to identify the card during drag
-		if (event.dataTransfer) {
-			event.dataTransfer.setData(
-				'text/plain',
-				JSON.stringify({
-					// cardId: card.id,
-					fromIndex: index
-				})
-			);
-
-			// Set drag image and effects
-			event.dataTransfer.effectAllowed = 'move';
-		}
-
-		onDragStart();
+		onDragStart(event);
 	}
 
 	function handleDragEnd() {
-		isBeingDragged = false;
 		onDragEnd();
 	}
 </script>
@@ -62,21 +36,22 @@
 	<div
 		bind:this={element}
 		role="listitem"
-		aria-grabbed="false"
+		aria-grabbed={card.isBeingDragged ? true : false}
 		id="card-c-{index}-s-{stackPosition}"
-		class=" flex h-full cursor-grab flex-col rounded-lg border border-gray-200 bg-white shadow-sm transition-transform duration-200 ease-in-out select-none hover:translate-y-[4px] hover:shadow-md {isBeingDragged
-			? 'cursor-grabbing opacity-70'
-			: ''} {isDragOver ? 'ring-2 ring-blue-500' : ''} {card.suit === 'heart' ||
-		card.suit === 'diamond'
-			? 'text-red-500'
-			: 'text-black'}"
-		draggable="true"
+		class={[
+			'flex h-full flex-col rounded-lg border border-gray-200  shadow-sm transition-transform duration-200 ease-in-out select-none',
+			card.isDraggable && 'cursor-grab hover:translate-y-[4px] hover:shadow-md',
+			card.isBeingDragged && 'cursor-grabbing opacity-100',
+			isDragOver ? 'bg-amber-100 ring-2 ring-amber-500' : 'bg-white',
+			CardColors[CardSuit[card.suit].color]
+		]}
+		draggable={card.isDraggable}
 		ondragstart={handleDragStart}
 		ondragend={handleDragEnd}
 	>
 		<div
 			class="h-[6px] w-full rounded-t-md"
-			style="background: repeating-linear-gradient(90deg, #ff9999, #ff9999 3px, white 3px, white 6px);"
+			style={`background: repeating-linear-gradient(90deg, ${cardEdgeColor});`}
 		></div>
 		<div class="flex justify-between px-2 text-xl">
 			<div class=" font-bold">{card.value}</div>
@@ -86,8 +61,8 @@
 			{suitSymbol}
 		</div>
 		<div
-			class="h-[6px] w-full rounded-t-md"
-			style="background: repeating-linear-gradient(90deg, #ff9999, #ff9999 3px, white 3px, white 6px);"
+			class="h-[6px] w-full rounded-b-md"
+			style={`background: repeating-linear-gradient(90deg, ${cardEdgeColor});`}
 		></div>
 		<!-- Regular Card Styling -->
 	</div>

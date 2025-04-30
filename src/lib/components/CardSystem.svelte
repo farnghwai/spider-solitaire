@@ -1,149 +1,192 @@
 <script lang="ts">
 	import Card from './Card.svelte';
 	import { cardStacks } from './shared.svelte';
-	import type { CardType, CardSystemProps } from './shared.svelte';
+	import type { CardType, CardSystemProps, Position } from './shared.svelte';
 
 	// Modern Svelte 5 props
-	let { onUpdate, onClick }: CardSystemProps = $props();
+	// let { onUpdate, onClick }: CardSystemProps = $props();
 	// $inspect('cardSystem', 'displayedCards', displayedCards.length, displayedCards);
 	// Svelte 5 reactive state
-	let draggedCard = $state(null);
+	let draggedCard: CardType | null = $state(null);
 	let draggedIndex = $state(-1);
+	let draggedStackPosition = $state(-1);
 	let dragOverIndex = $state(-1);
 	let isBeingDragged = $state(false);
 
-	$inspect('cardSystem after', 'cardStacks', cardStacks);
-	// Process displayed cards into stacks - using Svelte 5 effect
-	// $effect(() => {
-	// 	// Reset stacks
-	// 	cardStacks = Array(10)
-	// 		.fill()
-	// 		.map(() => []);
-
-	// 	// Process normalized cards (limited to 10 slots)
-	// 	const cards = displayedCards.slice(0, 10);
-	// 	cards.forEach((card, index) => {
-	// 		if (card) {
-	// 			cardStacks[index].push(card);
-	// 		}
-	// 	});
-	// });
-
-	// Handle card click using the callback prop
-	function handleCardClick(card) {
-		if (card) {
-			onClick(card);
-		}
-	}
-	// $inspect(draggedCard).with(console.trace);
-	// $inspect(draggedIndex).with(console.trace);
+	let dragPosition: Position = $state({ x: 0, y: 0 });
+	let dragOffset: Position = $state({ x: 0, y: 0 });
 
 	// Handle drag start
-	function handleDragStart(card: CardType, index: number) {
+	function handleDragStart(event: DragEvent, card: CardType, index: number, stackPosition: number) {
+		isBeingDragged = true;
+
 		draggedCard = card;
-		// draggedIndex = index;
-		const dc = $state.snapshot(draggedCard);
-		const di = $state.snapshot(draggedIndex);
-		console.log('handleDragStart', di, dc);
+		draggedCard.isBeingDragged = true;
+		draggedIndex = index;
+		draggedStackPosition = stackPosition;
+
+		// Set data to identify the card during drag
+		if (event.dataTransfer) {
+			event.dataTransfer.clearData();
+			// event.dataTransfer.setData(
+			// 	'text/plain',
+			// 	JSON.stringify({
+			// 		// cardId: card.id,
+			// 		fromIndex: index
+			// 	})
+			// );
+			// Set drag image and effects
+			event.dataTransfer.effectAllowed = 'move';
+		}
 	}
 
 	// Handle drop
 	function handleDrop(event: DragEvent) {
 		event.preventDefault();
 
-		const data = event.dataTransfer?.getData('text/plain');
+		if (draggedCard && draggedIndex !== -1 && draggedStackPosition !== -1) {
+			let newCardStack = cardStacks[dragOverIndex];
+			const oldCardStack = cardStacks[draggedIndex];
+			const cardsToMove = oldCardStack.slice(draggedStackPosition);
+			let isValidToDrop = false;
+			if (newCardStack.length === 0) {
+				isValidToDrop = true;
+			} else {
+				const newCardStackLastPosition = newCardStack.length - 1;
+				const newLastCard = newCardStack[newCardStackLastPosition];
 
-		const dc = $state.snapshot(draggedCard);
-		const di = $state.snapshot(draggedIndex);
-		console.log('handleDrop1', data, 'draggedCard', dc, 'draggedIndex', di);
-		if (draggedCard && draggedIndex !== -1) {
-			//cardStacks[di].push(dc);
-			const oldStackFromIndex = JSON.parse(data)?.fromIndex;
-			const oi = $state.snapshot(oldStackFromIndex);
-			if (oi === draggedIndex) {
-				draggedIndex = -1;
-				return;
+				if (newLastCard.valueIndex - 1 === draggedCard.valueIndex) {
+					isValidToDrop = true;
+				}
 			}
 
-			const newCardStack = cardStacks[draggedIndex];
-			newCardStack.push(draggedCard);
+			if (isValidToDrop) {
+				cardStacks[dragOverIndex] = [...newCardStack, ...cardsToMove];
+				oldCardStack.splice(draggedStackPosition, cardsToMove.length);
 
-			const oldCardStack = cardStacks[oldStackFromIndex];
-			const oldCard = oldCardStack.pop();
-			const dss = $state.snapshot(oldCard);
-			console.log('oldcard2', dss);
-			//cardStacks.splice(oldStackFromIndex, 1);
-			draggedIndex = -1;
-			//console.log('processign handleDrop', renderCardStacks, di, dc);
-			// Create copy of stacks
-			// // Find the card in the original stack
-			// let cardToMove = null;
-			// let fromStackIndex = -1;
-			// // Search through all stacks to find the dragged card
-			// for (let i = 0; i < newStacks.length; i++) {
-			// 	const cardIndex = newStacks[i].findIndex((c) => c.id === draggedCard.id);
-			// 	if (cardIndex !== -1) {
-			// 		cardToMove = newStacks[i].splice(cardIndex, 1)[0];
-			// 		fromStackIndex = i;
-			// 		break;
-			// 	}
-			// }
-			// if (cardToMove) {
-			// 	// Add to new stack
-			// 	newStacks[index].push(cardToMove);
-			// 	// Update the stacks
-			// 	cardStacks = newStacks;
-			// 	// Flatten stacks to update displayedCards using callback prop
-			// 	const newCards = newStacks.flatMap((stack) => stack);
-			// 	onUpdate(newCards);
-			// }
+				if (oldCardStack.length > 0) {
+					const oldCardStackLastPosition = oldCardStack.length - 1;
+
+					const oldLastCard = oldCardStack[oldCardStackLastPosition];
+					oldLastCard.isDraggable = true;
+				}
+			}
 		}
-
-		// Reset drag state
-		draggedCard = null;
-		draggedIndex = -1;
-		dragOverIndex = -1;
 	}
 
 	function handleDragOver(event: DragEvent, index: number) {
+		const newCardStack = cardStacks[index];
+		if (draggedCard && newCardStack.length > 0) {
+			const newCardStackLastPosition = newCardStack.length - 1;
+			const newLastCard = newCardStack[newCardStackLastPosition];
+
+			if (newLastCard.valueIndex - 1 !== draggedCard.valueIndex) {
+				return;
+			}
+		}
+
 		event.preventDefault();
 		if (event.dataTransfer) {
 			event.dataTransfer.dropEffect = 'move';
 		}
-		draggedIndex = index;
+		dragOverIndex = index;
 	}
 
-	function handleDragEnd(stackedCard) {
-		// console.log(stackedCard, index);
-		console.log('handleDragEnd', stackedCard);
+	function handleDragEnd() {
+		// Reset drag state
+		if (draggedCard) {
+			draggedCard.isBeingDragged = false;
+		}
+
+		draggedCard = null;
+		draggedIndex = -1;
+		draggedStackPosition = -1;
+		dragOverIndex = -1;
+		isBeingDragged = false;
 	}
 
-	// $inspect('renderCardStacksA', renderCardStacks);
+	function handleDragLeave() {
+		dragOverIndex = -1;
+	}
+
+	const handleDocumentMouseMove = (event: MouseEvent) => {
+		if (isBeingDragged) {
+			event.preventDefault();
+			dragPosition = { x: event.clientX, y: event.clientY };
+		}
+	};
+
+	const handleDocumentMouseUp = (event: MouseEvent) => {
+		// Find the target slot by position
+		if (!isBeingDragged) return;
+
+		// const targetSlotId = findSlotByPosition(e.clientX, e.clientY);
+		// if (targetSlotId && sourceSlotId && draggedItemIds.length > 0) {
+		// 	// Move the items from source to target
+		// 	moveItems(draggedItemIds, targetSlotId);
+		// 	console.log('mouse up to slot');
+		// } else {
+		// 	console.log('mouse up only');
+		// }
+		// // Reset drag state
+		// // isDraggingRef.current = false;
+		// console.log($state.snapshot(draggedItemIds));
+		// isDragging = false;
+		// draggedItemIds = [];
+		// sourceSlotId = null;
+	};
 </script>
+
+<svelte:document onmousemove={handleDocumentMouseMove} onmouseup={handleDocumentMouseUp} />
 
 <div class="mb-5 flex justify-center gap-2">
 	{#each cardStacks as stackedCards, index}
 		<div
-			class="relative h-44 w-28 rounded-lg border-2 border-dashed border-gray-300 transition-all duration-200 ease-in-out hover:border-gray-400 {dragOverIndex ===
-			index
-				? 'border-blue-400'
-				: ''}"
+			class={[
+				'relative h-44 w-28 rounded-lg border-2 border-dashed border-gray-300 transition-all duration-200 ease-in-out  ',
+				dragOverIndex === index ? 'border-blue-400' : ''
+			]}
 			data-index={index}
 			role="listitem"
 			ondragover={(event: DragEvent) => handleDragOver(event, index)}
 			ondrop={handleDrop}
+			ondragleave={handleDragLeave}
 		>
 			{#each stackedCards as stackedCard, stackPosition}
 				<Card
 					card={stackedCard}
 					{index}
-					isDragOver={dragOverIndex === index}
+					isDragOver={dragOverIndex === index && stackedCards.length - 1 === stackPosition}
 					{stackPosition}
-					onCardClick={() => handleCardClick(stackedCard)}
-					onDragStart={() => handleDragStart(stackedCard, index)}
-					onDragEnd={(event) => handleDragEnd(event)}
+					onDragStart={(event: DragEvent) =>
+						handleDragStart(event, stackedCard, index, stackPosition)}
+					onDragEnd={() => handleDragEnd()}
 				/>
 			{/each}
 		</div>
 	{/each}
+	<div
+		class="pointer-events-none fixed"
+		style={`
+          left: ${dragPosition.x - dragOffset.x}px;
+          top: ${dragPosition.y - dragOffset.y}px;
+          z-index: 9999;
+          width: 3rem;
+          height: 3rem;
+        `}
+	>
+		<div class="relative h-full w-full">
+			<div
+				class={`
+               absolute
+				h-12 w-12 rounded-md border border-white bg-gray-300 opacity-100 shadow-lg
+              `}
+				style={`
+                z-index: ${9999};
+                left: 10px;
+                top: 10px;
+              `}
+			></div>
+		</div>
+	</div>
 </div>

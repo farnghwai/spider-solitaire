@@ -1,8 +1,13 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import CardSystem from '$lib/components/CardSystem.svelte';
-	import { cardStacks, CardValues, getCartSuitKeys } from '$lib/components/shared.svelte';
-	import type { CardType, CartSuitKeyType } from '$lib/components/shared.svelte';
+	import {
+		cardStacks,
+		CARD_VALUES,
+		NO_OF_CARD_SLOT,
+		getRandomDifferentColorSuits
+	} from '$lib/components/shared.svelte';
+	import type { CardType } from '$lib/components/shared.svelte';
 
 	import Card from '$lib/components/Card.svelte';
 	import CheckmarkButton from '$lib/components/CheckmarkButton.svelte';
@@ -34,36 +39,46 @@
 		};
 	}
 
-	const randomSuits = shuffleArray(getCartSuitKeys()).slice(0, 2) as CartSuitKeyType[];
+	const randomSuits = getRandomDifferentColorSuits();
 
 	const cardsData: CardType[] = [];
 	// generate total 6 set of cards based on 2 suits
+	let counter = 1;
 	for (let i = 0; i < 3; i++) {
 		for (const suit of randomSuits) {
-			for (const value of CardValues) {
-				cardsData.push({ value, suit });
-			}
+			CARD_VALUES.forEach((value, index) => {
+				cardsData.push({
+					id: counter,
+					value,
+					suit,
+					valueIndex: index,
+					isDraggable: false,
+					isBeingDragged: false
+				});
+				counter++;
+			});
 		}
 	}
 
-	const emptyCardType: CardType[] = [];
-	let displayedCards: CardType[] = $state([...emptyCardType]);
-	let remainingCards = $state([...emptyCardType]);
-	const topN = 10;
+	let displayedCards: CardType[] = $state([]);
+	let remainingCards: CardType[] = $state([]);
+	const topN = 30; //10;
+	const noOfStacks = topN / NO_OF_CARD_SLOT;
 
 	onMount(() => {
 		// Choose 10 random cards
 		const pickResuts = pickCards(cardsData, topN);
 		displayedCards = [...pickResuts.picked];
 		remainingCards = [...pickResuts.remaining];
-
 		cardStacks.forEach((card, index: number) => {
-			const dcard = displayedCards[index];
-			// const nextIndex = index === displayedCards.length - 1 ? 0 : index + 1;
-			// const dcard2 = { ...dcard, value: displayedCards[nextIndex].value };
-			// newcardStacks.push([...card, dcard, dcard2]);
-			//newcardStacks.push([...card, dcard]);
-			card.push(dcard);
+			for (let i = 0; i < noOfStacks; i++) {
+				const cardIndex = index + i * NO_OF_CARD_SLOT;
+				const dcard = displayedCards[cardIndex];
+				if (i + 1 === noOfStacks) {
+					dcard.isDraggable = true;
+				}
+				card.push(dcard);
+			}
 			// $inspect('current card', index, card, displayedCards[index]);
 		});
 	});
@@ -72,24 +87,24 @@
 	let timer = '00:23';
 
 	// Function to handle card click
-	function handleCardClick(event) {
-		const card = event.currentTarget;
-		card.style.transform = 'translateY(-10px)';
-		setTimeout(() => {
-			card.style.transform = 'translateY(0)';
-		}, 200);
-	}
+	// function handleCardClick(event) {
+	// 	const card = event.currentTarget;
+	// 	card.style.transform = 'translateY(-10px)';
+	// 	setTimeout(() => {
+	// 		card.style.transform = 'translateY(0)';
+	// 	}, 200);
+	// }
 
-	// Function to handle draw pile click
-	function handleDrawPileClick(event) {
-		const drawPile = event.currentTarget;
-		drawPile.style.transform = 'scale(0.95)';
-		setTimeout(() => {}, 100);
-	}
+	// // Function to handle draw pile click
+	// function handleDrawPileClick(event) {
+	// 	const drawPile = event.currentTarget;
+	// 	drawPile.style.transform = 'scale(0.95)';
+	// 	setTimeout(() => {}, 100);
+	// }
 
-	function handleCardUpdate(newCards) {
-		displayedCards = newCards;
-	}
+	// function handleCardUpdate(newCards) {
+	// 	displayedCards = newCards;
+	// }
 </script>
 
 <div class="flex min-h-screen flex-col bg-green-800 text-white select-none">
@@ -103,16 +118,16 @@
 				<Card {card} on:click={handleCardClick} />
 			{/each}
 		</div> -->
-		<CardSystem onUpdate={handleCardUpdate} onClick={handleCardClick} />
+		<CardSystem />
 
 		<!-- Draw Pile -->
 		<DrawPile handleDrawPileClick />
 
 		<!-- Checkmark Button -->
-		<CheckmarkButton />
+		<!-- <CheckmarkButton /> -->
 
 		<!-- Star Button -->
-		<StarButton />
+		<!-- <StarButton /> -->
 	</div>
 
 	<!-- Toolbar -->
