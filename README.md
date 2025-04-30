@@ -6,12 +6,19 @@ VS Code Extensions
 VS Code Workspace Configuration
 ```json
 {
+    "[typescript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": true
+    },
     "[svelte]": {
         "editor.defaultFormatter": "svelte.svelte-vscode",
         "editor.formatOnSave": true
     },
 }
 ```
+
+References
+- transitions.ts : https://svelte.dev/tutorial/svelte/animations
 
 # sv
 

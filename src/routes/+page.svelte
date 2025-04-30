@@ -9,7 +9,6 @@
 	} from '$lib/components/shared.svelte';
 	import type { CardType } from '$lib/components/shared.svelte';
 
-	import Card from '$lib/components/Card.svelte';
 	import CheckmarkButton from '$lib/components/CheckmarkButton.svelte';
 	import StarButton from '$lib/components/StarButton.svelte';
 	import DrawPileButton from '$lib/components/DrawPileButton.svelte';
@@ -34,8 +33,8 @@
 		const set1 = shuffled.slice(0, noOfCards);
 		const set2 = shuffled.slice(noOfCards);
 		return {
-			picked: set1,
-			remaining: set2
+			picked: set2,
+			remaining: set1
 		};
 	}
 
@@ -62,7 +61,7 @@
 
 	let displayedCards: CardType[] = $state([]);
 	let remainingCards: CardType[] = $state([]);
-	const topN = 30; //10;
+	const topN = 50; //10;
 	const noOfStacks = topN / NO_OF_CARD_SLOT;
 
 	onMount(() => {
@@ -70,20 +69,18 @@
 		const pickResuts = pickCards(cardsData, topN);
 		displayedCards = [...pickResuts.picked];
 		remainingCards = [...pickResuts.remaining];
-		cardStacks.forEach((card, index: number) => {
-			for (let i = 0; i < noOfStacks; i++) {
-				const cardIndex = index + i * NO_OF_CARD_SLOT;
-				const dcard = displayedCards[cardIndex];
-				if (i + 1 === noOfStacks) {
-					dcard.isDraggable = true;
-				}
-				card.push(dcard);
-			}
 
-			const currentStackCount = card.length;
-			let currentStackLastCard = card[currentStackCount - 1];
+		displayedCards.forEach((dcard, index) => {
+			const slotIndex = index % NO_OF_CARD_SLOT;
+			cardStacks[slotIndex].push(dcard);
+		});
+
+		cardStacks.forEach((currentStack) => {
+			const currentStackCount = currentStack.length;
+			let currentStackLastCard = currentStack[currentStackCount - 1];
+			currentStackLastCard.isDraggable = true;
 			for (let i = currentStackCount - 1; i >= 0; i--) {
-				const currentStackCard = card[i];
+				const currentStackCard = currentStack[i];
 				if (
 					!currentStackCard.isDraggable &&
 					currentStackCard.valueIndex - 1 === currentStackLastCard.valueIndex
@@ -160,9 +157,7 @@
 		<CardSystem />
 
 		<!-- Draw Pile -->
-		{#if remainingCards.length > 0}
-			<DrawPileButton onClick={handleDrawPileClick} remaingCount={remainingCards.length} />
-		{/if}
+		<DrawPileButton onClick={handleDrawPileClick} {remainingCards} />
 		<!-- Checkmark Button -->
 		<!-- <CheckmarkButton /> -->
 

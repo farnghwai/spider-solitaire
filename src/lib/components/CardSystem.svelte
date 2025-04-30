@@ -1,6 +1,8 @@
 <script lang="ts">
-	import Card from './Card.svelte';
-	import { cardStacks } from './shared.svelte';
+	import { flip } from 'svelte/animate';
+	import { send, receive } from './transition';
+
+	import { cardStacks, CardSuit, CardColors } from './shared.svelte';
 	import type { CardType, CardSystemProps, Position } from './shared.svelte';
 
 	// Modern Svelte 5 props
@@ -166,16 +168,55 @@
 			ondrop={handleDrop}
 			ondragleave={handleDragLeave}
 		>
-			{#each stackedCards as stackedCard, stackPosition}
-				<Card
-					card={stackedCard}
-					{index}
-					isDragOver={dragOverIndex === index && stackedCards.length - 1 === stackPosition}
-					{stackPosition}
-					onDragStart={(event: DragEvent) =>
-						handleDragStart(event, stackedCard, index, stackPosition)}
-					onDragEnd={() => handleDragEnd()}
-				/>
+			{#each stackedCards as stackedCard, stackPosition (stackedCard.id)}
+				{@const stackOffset = stackPosition * 9}
+				{@const suitSymbol = CardSuit[stackedCard.suit].icon}
+				{@const isDragOver = dragOverIndex === index && stackedCards.length - 1 === stackPosition}
+
+				<div
+					class="absolute top-[calc(var(--spacing)*var(--stackOffset))] h-full w-full p-2"
+					style="--stackOffset: {stackOffset};"
+					in:receive={{ key: stackedCard.id }}
+					out:send={{ key: stackedCard.id }}
+					animate:flip={{ duration: 300 }}
+				>
+					<div
+						role="listitem"
+						aria-grabbed={stackedCard.isBeingDragged ? true : false}
+						id="card-c-{index}-s-{stackPosition}"
+						class={[
+							'flex h-full flex-col rounded-lg border border-gray-200  shadow-sm transition-transform duration-200 ease-in-out select-none',
+							stackedCard.isDraggable && 'cursor-grab hover:-translate-y-1 hover:shadow-md',
+							stackedCard.isBeingDragged && 'cursor-grabbing opacity-100',
+							isDragOver ? 'bg-amber-100 ring-2 ring-amber-500' : 'bg-white',
+							CardColors[CardSuit[stackedCard.suit].color]
+						]}
+						draggable={stackedCard.isDraggable}
+						ondragstart={(event: DragEvent) =>
+							handleDragStart(event, stackedCard, index, stackPosition)}
+						ondragend={handleDragEnd}
+					>
+						<div
+							class={[
+								'h-1.5 w-full rounded-t-md',
+								stackedCard.isDraggable && 'border-t-2 border-t-teal-400'
+							]}
+							style="background: repeating-linear-gradient(90deg, #ff9999, #ff9999 3px, white 3px, white 6px);"
+						></div>
+
+						<div class="flex justify-between px-2 text-xl">
+							<div class=" font-bold">{stackedCard.value}</div>
+							<div class=" font-bold">{suitSymbol}</div>
+						</div>
+						<div class="flex grow items-center justify-center text-7xl">
+							{suitSymbol}
+						</div>
+						<div
+							class="h-1.5 w-full rounded-b-md"
+							style="background: repeating-linear-gradient(90deg, #ff9999, #ff9999 3px, white 3px, white 6px);"
+						></div>
+					</div>
+				</div>
 			{/each}
 		</div>
 	{/each}
