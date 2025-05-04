@@ -106,3 +106,5 @@ export const cardStacks: CardType[][] = $state(
 		.fill([])
 		.map(() => [])
 );
+
+export const winCardStacks: CardType[][] = $state([[]]);

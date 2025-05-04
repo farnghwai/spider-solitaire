@@ -11,6 +11,7 @@
 
 	import CheckmarkButton from '$lib/components/CheckmarkButton.svelte';
 	import StarButton from '$lib/components/StarButton.svelte';
+	import WinCardSuitDeck from '$lib/components/WinCardSuitDeck.svelte';
 	import DrawPileButton from '$lib/components/DrawPileButton.svelte';
 	import Toolbar from '$lib/components/Toolbar.svelte';
 
@@ -40,31 +41,38 @@
 
 	const randomSuits = getRandomDifferentColorSuits();
 
-	const cardsData: CardType[] = [];
-	// generate total 6 set of cards based on 2 suits
-	let counter = 1;
-	for (let i = 0; i < 3; i++) {
-		for (const suit of randomSuits) {
-			CARD_VALUES.forEach((value, index) => {
-				cardsData.push({
-					id: counter,
-					value,
-					suit,
-					valueIndex: index,
-					isDraggable: false,
-					isBeingDragged: false
+	function initCards() {
+		const cardsData: CardType[] = [];
+
+		// generate total 6 set of cards based on 2 suits
+		let counter = 1;
+		for (let i = 0; i < 3; i++) {
+			for (const suit of randomSuits) {
+				CARD_VALUES.forEach((value, index) => {
+					cardsData.push({
+						id: counter,
+						value,
+						suit,
+						valueIndex: index,
+						isDraggable: false,
+						isBeingDragged: false
+					});
+					counter++;
 				});
-				counter++;
-			});
+			}
 		}
+		return cardsData;
 	}
 
 	let displayedCards: CardType[] = $state([]);
 	let remainingCards: CardType[] = $state([]);
+
 	const topN = 50; //10;
 	const noOfStacks = topN / NO_OF_CARD_SLOT;
 
 	onMount(() => {
+		const cardsData = initCards();
+
 		// Choose 10 random cards
 		const pickResuts = pickCards(cardsData, topN);
 		displayedCards = [...pickResuts.picked];
@@ -155,6 +163,9 @@
 			{/each}
 		</div> -->
 		<CardSystem />
+
+		<!-- WinCardSuitDeck Pile -->
+		<WinCardSuitDeck />
 
 		<!-- Draw Pile -->
 		<DrawPileButton onClick={handleDrawPileClick} {remainingCards} />

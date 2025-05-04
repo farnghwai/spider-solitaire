@@ -2,7 +2,7 @@
 	import { flip } from 'svelte/animate';
 	import { send, receive } from './transition';
 
-	import { cardStacks, CardSuit, CardColors } from './shared.svelte';
+	import { cardStacks, winCardStacks, CardSuit, CardColors, CARD_VALUES } from './shared.svelte';
 	import type { CardType, CardSystemProps, Position } from './shared.svelte';
 
 	// Modern Svelte 5 props
@@ -42,6 +42,22 @@
 		}
 	}
 
+	function checkIfIsCompleteSuitStack(currentCardStack: CardType[]) {
+		if (currentCardStack.length === 0 || currentCardStack.length < CARD_VALUES.length) {
+			return false;
+		}
+
+		let isValid = true;
+		for (let i = 0, j = currentCardStack.length - 1; i < CARD_VALUES.length && j >= 0; i++, j--) {
+			if (CARD_VALUES[i] !== currentCardStack[j].value) {
+				isValid = false;
+				break;
+			}
+		}
+
+		return isValid;
+	}
+
 	// Handle drop
 	function handleDrop(event: DragEvent) {
 		event.preventDefault();
@@ -64,6 +80,11 @@
 
 			if (isValidToDrop) {
 				cardStacks[dragOverIndex] = [...newCardStack, ...cardsToMove];
+				if (newCardStack.length === 0) {
+					console.log($state.snapshot(newCardStack));
+				}
+				const dragOverCardStack = cardStacks[dragOverIndex];
+
 				oldCardStack.splice(draggedStackPosition, cardsToMove.length);
 
 				if (oldCardStack.length > 0) {
@@ -85,6 +106,19 @@
 						}
 						currentStackLastCard = { ...currentStackCard };
 					}
+				}
+
+				if (checkIfIsCompleteSuitStack(dragOverCardStack)) {
+					const cardValueCount = CARD_VALUES.length;
+					const currentWinCardDeck = dragOverCardStack.splice(
+						dragOverCardStack.length - cardValueCount,
+						cardValueCount
+					);
+
+					const winCardStacksCount = winCardStacks.length - 1;
+					winCardStacks[winCardStacksCount].push(...currentWinCardDeck);
+					winCardStacks.push([]);
+					// winCardStacks.unshift(currentWinCardDeck);
 				}
 			}
 		}
@@ -159,7 +193,7 @@
 	{#each cardStacks as stackedCards, index}
 		<div
 			class={[
-				'relative h-44 w-28 rounded-lg border-2 border-dashed border-gray-300 transition-all duration-200 ease-in-out  ',
+				'relative h-44 w-28 rounded-lg border-2 border-dashed border-gray-300   ',
 				dragOverIndex === index ? 'border-blue-400' : ''
 			]}
 			data-index={index}
@@ -176,16 +210,16 @@
 				<div
 					class="absolute top-[calc(var(--spacing)*var(--stackOffset))] h-full w-full p-2"
 					style="--stackOffset: {stackOffset};"
+					animate:flip={{ duration: 300 }}
 					in:receive={{ key: stackedCard.id }}
 					out:send={{ key: stackedCard.id }}
-					animate:flip={{ duration: 300 }}
 				>
 					<div
 						role="listitem"
 						aria-grabbed={stackedCard.isBeingDragged ? true : false}
 						id="card-c-{index}-s-{stackPosition}"
 						class={[
-							'flex h-full flex-col rounded-lg border border-gray-200  shadow-sm transition-transform duration-200 ease-in-out select-none',
+							'flex h-full flex-col rounded-lg border border-gray-200  shadow-sm  select-none',
 							stackedCard.isDraggable && 'cursor-grab hover:-translate-y-1 hover:shadow-md',
 							stackedCard.isBeingDragged && 'cursor-grabbing opacity-100',
 							isDragOver ? 'bg-amber-100 ring-2 ring-amber-500' : 'bg-white',
