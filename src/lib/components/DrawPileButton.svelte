@@ -2,22 +2,35 @@
 <script lang="ts">
 	import { flip } from 'svelte/animate';
 	import { send, receive } from './transition';
-	import { CardSuit } from './shared.svelte';
-	import type { CardType } from './shared.svelte';
+	import { CardSuit, NO_OF_CARD_SLOT } from './shared.svelte';
+	import { eventStore, dispatch } from '$lib/eventStore.svelte';
 
-	interface DrawPileProps {
-		onClick: (event: MouseEvent) => void;
-		remainingCards: CardType[];
+	// interface DrawPileProps {
+	// 	onClick: (event: MouseEvent) => void;
+	// }
+	// let { onClick }: DrawPileProps = $props();
+	function handleDrawPileClick(event: MouseEvent) {
+		const remaingCount =
+			eventStore.remainingItems.length < NO_OF_CARD_SLOT
+				? eventStore.remainingItems.length
+				: NO_OF_CARD_SLOT;
+		if (remaingCount > 0) {
+			dispatch({
+				type: 'drawPile',
+				payload: {
+					remaingCount: remaingCount
+				}
+			});
+		}
 	}
-	let { onClick, remainingCards }: DrawPileProps = $props();
 </script>
 
 <div class="absolute right-5 bottom-5">
-	{#if remainingCards.length > 0}
+	{#if eventStore.remainingItems.length > 0}
 		<button
 			aria-label="Draw Pile"
 			class=" flex h-40 w-24 scale-90 cursor-pointer items-center justify-center rounded-md bg-white p-1 shadow-md transition-transform duration-100 ease-in-out hover:scale-100"
-			onclick={onClick}
+			onclick={handleDrawPileClick}
 		>
 			<div class="flex h-full w-full flex-col items-center justify-center rounded-lg bg-red-500">
 				<svg class="h-28 w-16" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
@@ -26,11 +39,11 @@
 						fill="black"
 					/>
 				</svg>
-				<span>{remainingCards.length}</span>
+				<span>{eventStore.remainingItems.length}</span>
 			</div>
 		</button>
 	{/if}
-	{#each remainingCards as stackedCard, stackPosition (stackedCard.id)}
+	{#each eventStore.remainingItems as stackedCard, stackPosition (stackedCard.id)}
 		{@const suitSymbol = CardSuit[stackedCard.suit].icon}
 
 		<div

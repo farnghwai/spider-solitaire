@@ -2,12 +2,17 @@
 	import { onMount } from 'svelte';
 	import CardSystem from '$lib/components/CardSystem.svelte';
 	import {
-		cardStacks,
 		CARD_VALUES,
 		NO_OF_CARD_SLOT,
 		getRandomDifferentColorSuits
 	} from '$lib/components/shared.svelte';
 	import type { CardType } from '$lib/components/shared.svelte';
+	import {
+		initCardStacks,
+		eventStore,
+		dispatch,
+		populateInitCardStacksTo
+	} from '$lib/eventStore.svelte';
 
 	import CheckmarkButton from '$lib/components/CheckmarkButton.svelte';
 	import StarButton from '$lib/components/StarButton.svelte';
@@ -41,7 +46,7 @@
 
 	const randomSuits = getRandomDifferentColorSuits();
 
-	function initCards() {
+	function generateCardSuites() {
 		const cardsData: CardType[] = [];
 
 		// generate total 6 set of cards based on 2 suits
@@ -64,14 +69,16 @@
 		return cardsData;
 	}
 
-	let displayedCards: CardType[] = $state([]);
 	let remainingCards: CardType[] = $state([]);
 
-	const topN = 50; //10;
-	const noOfStacks = topN / NO_OF_CARD_SLOT;
+	function initCards() {
+		// no action if cardStacks already have card
+		if (!initCardStacks.display.every((cardSlot) => cardSlot.length === 0)) {
+			return;
+		}
 
-	onMount(() => {
-		const cardsData = initCards();
+		let displayedCards: CardType[] = [];
+		const cardsData = generateCardSuites();
 
 		// Choose 10 random cards
 		const pickResuts = pickCards(cardsData, topN);
@@ -80,10 +87,10 @@
 
 		displayedCards.forEach((dcard, index) => {
 			const slotIndex = index % NO_OF_CARD_SLOT;
-			cardStacks[slotIndex].push(dcard);
+			initCardStacks.display[slotIndex].push(dcard);
 		});
 
-		cardStacks.forEach((currentStack) => {
+		initCardStacks.display.forEach((currentStack) => {
 			const currentStackCount = currentStack.length;
 			let currentStackLastCard = currentStack[currentStackCount - 1];
 			currentStackLastCard.isDraggable = true;
@@ -98,6 +105,15 @@
 				currentStackLastCard = { ...currentStackCard };
 			}
 		});
+		initCardStacks.remaining.push(...pickResuts.remaining);
+		populateInitCardStacksTo({ display: eventStore.items, remaining: eventStore.remainingItems });
+	}
+
+	const topN = 50; //10;
+	const noOfStacks = topN / NO_OF_CARD_SLOT;
+
+	onMount(() => {
+		initCards();
 	});
 
 	// Timer state
@@ -113,38 +129,18 @@
 	// }
 
 	// // Function to handle draw pile click
-	function handleDrawPileClick(event: MouseEvent) {
-		const remaingCount =
-			remainingCards.length < NO_OF_CARD_SLOT ? remainingCards.length : NO_OF_CARD_SLOT;
-		const piles = remainingCards.splice(0, remaingCount);
-
-		piles.forEach((pcard, index) => {
-			const currentStack = cardStacks[index];
-			const currentStackCount = currentStack.length;
-
-			pcard.isDraggable = true;
-			currentStack.push(pcard);
-
-			if (currentStackCount > 0) {
-				let currentStackLastCard = pcard;
-				let currentStackCard = currentStack[currentStackCount - 1];
-				if (
-					currentStackCard.isDraggable &&
-					currentStackCard.valueIndex - 1 !== currentStackLastCard.valueIndex
-				) {
-					currentStackCard.isDraggable = false;
-				}
-				if (!currentStackCard.isDraggable) {
-					for (let i = currentStackCount - 2; i >= 0; i--) {
-						currentStackCard = currentStack[i];
-						if (currentStackCard.isDraggable) {
-							currentStackCard.isDraggable = false;
-						}
-					}
-				}
-			}
-		});
-	}
+	// function handleDrawPileClick(event: MouseEvent) {
+	// 	const remaingCount =
+	// 		remainingCards.length < NO_OF_CARD_SLOT ? remainingCards.length : NO_OF_CARD_SLOT;
+	// 	if (remaingCount > 0) {
+	// 		dispatch({
+	// 			type: 'drawPile',
+	// 			payload: {
+	// 				remaingCount: remaingCount
+	// 			}
+	// 		});
+	// 	}
+	// }
 
 	// function handleCardUpdate(newCards) {
 	// 	displayedCards = newCards;
@@ -168,7 +164,7 @@
 		<WinCardSuitDeck />
 
 		<!-- Draw Pile -->
-		<DrawPileButton onClick={handleDrawPileClick} {remainingCards} />
+		<DrawPileButton />
 		<!-- Checkmark Button -->
 		<!-- <CheckmarkButton /> -->
 

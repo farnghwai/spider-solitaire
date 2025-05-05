@@ -2,8 +2,15 @@
 	import { flip } from 'svelte/animate';
 	import { send, receive } from './transition';
 
-	import { cardStacks, winCardStacks, CardSuit, CardColors, CARD_VALUES } from './shared.svelte';
+	import {
+		winCardStacks,
+		CardSuit,
+		CardColors,
+		CARD_VALUES,
+		updateDraggableStatus
+	} from './shared.svelte';
 	import type { CardType, CardSystemProps, Position } from './shared.svelte';
+	import { eventStore, dispatch } from '$lib/eventStore.svelte';
 
 	// Modern Svelte 5 props
 	// let { onUpdate, onClick }: CardSystemProps = $props();
@@ -63,9 +70,7 @@
 		event.preventDefault();
 
 		if (draggedCard && draggedIndex !== -1 && draggedStackPosition !== -1) {
-			let newCardStack = cardStacks[dragOverIndex];
-			const oldCardStack = cardStacks[draggedIndex];
-			const cardsToMove = oldCardStack.slice(draggedStackPosition);
+			let newCardStack = eventStore.items[dragOverIndex];
 			let isValidToDrop = false;
 			if (newCardStack.length === 0) {
 				isValidToDrop = true;
@@ -79,35 +84,24 @@
 			}
 
 			if (isValidToDrop) {
-				cardStacks[dragOverIndex] = [...newCardStack, ...cardsToMove];
-				if (newCardStack.length === 0) {
-					console.log($state.snapshot(newCardStack));
-				}
-				const dragOverCardStack = cardStacks[dragOverIndex];
+				// cardStacks[dragOverIndex] = [...newCardStack, ...cardsToMove];
+				// oldCardStack.splice(draggedStackPosition, cardsToMove.length);
 
-				oldCardStack.splice(draggedStackPosition, cardsToMove.length);
-
-				if (oldCardStack.length > 0) {
-					// const oldCardStackLastPosition = oldCardStack.length - 1;
-
-					// const oldLastCard = oldCardStack[oldCardStackLastPosition];
-					// oldLastCard.isDraggable = true;
-
-					const currentStackCount = oldCardStack.length;
-					let currentStackLastCard = oldCardStack[currentStackCount - 1];
-					currentStackLastCard.isDraggable = true;
-					for (let i = currentStackCount - 1; i >= 0; i--) {
-						const currentStackCard = oldCardStack[i];
-						if (
-							!currentStackCard.isDraggable &&
-							currentStackCard.valueIndex - 1 === currentStackLastCard.valueIndex
-						) {
-							currentStackCard.isDraggable = true;
-						}
-						currentStackLastCard = { ...currentStackCard };
+				dispatch({
+					type: 'move',
+					payload: {
+						oldIndex: draggedIndex,
+						draggedStackPosition: draggedStackPosition,
+						newIndex: dragOverIndex
 					}
-				}
+				});
 
+				const oldCardStack = eventStore.items[draggedIndex];
+				//const cardsToMove = oldCardStack.slice(draggedStackPosition);
+
+				updateDraggableStatus(oldCardStack);
+
+				const dragOverCardStack = eventStore.items[dragOverIndex];
 				if (checkIfIsCompleteSuitStack(dragOverCardStack)) {
 					const cardValueCount = CARD_VALUES.length;
 					const currentWinCardDeck = dragOverCardStack.splice(
@@ -125,7 +119,7 @@
 	}
 
 	function handleDragOver(event: DragEvent, index: number) {
-		const newCardStack = cardStacks[index];
+		const newCardStack = eventStore.items[index];
 		if (draggedCard && newCardStack.length > 0) {
 			const newCardStackLastPosition = newCardStack.length - 1;
 			const newLastCard = newCardStack[newCardStackLastPosition];
@@ -190,7 +184,7 @@
 <svelte:document onmousemove={handleDocumentMouseMove} onmouseup={handleDocumentMouseUp} />
 
 <div class="mb-5 flex justify-center gap-2">
-	{#each cardStacks as stackedCards, index}
+	{#each eventStore.items as stackedCards, index}
 		<div
 			class={[
 				'relative h-44 w-28 rounded-lg border-2 border-dashed border-gray-300   ',

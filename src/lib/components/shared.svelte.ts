@@ -108,3 +108,31 @@ export const cardStacks: CardType[][] = $state(
 );
 
 export const winCardStacks: CardType[][] = $state([[]]);
+
+export const updateDraggableStatus = (currentStack: CardType[]) => {
+	if (currentStack.length > 0) {
+		const currentStackLastIndex = currentStack.length - 1;
+		let currentStackLastCard = currentStack[currentStackLastIndex];
+		currentStackLastCard.isDraggable = true;
+		let isCardInOrder = true;
+		for (let i = currentStackLastIndex - 1; i >= 0; i--) {
+			const currentStackCard = currentStack[i];
+			if (isCardInOrder) {
+				if (currentStackCard.valueIndex - 1 === currentStackLastCard.valueIndex) {
+					if (!currentStackCard.isDraggable) {
+						currentStackCard.isDraggable = true;
+					}
+				} else {
+					isCardInOrder = false;
+					if (currentStackCard.isDraggable) {
+						currentStackCard.isDraggable = false;
+					}
+				}
+			} else {
+				currentStackCard.isDraggable = false;
+			}
+
+			currentStackLastCard = { ...currentStackCard };
+		}
+	}
+};
