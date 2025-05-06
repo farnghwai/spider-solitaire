@@ -6,6 +6,7 @@
 - [ ] Flip card
 - [ ] Settings
 - [ ] PWA App
+- [ ] Github Pages
 
 ## VS Code Extensions
 1. PrettierPrettier - Code formatter
