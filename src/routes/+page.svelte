@@ -4,15 +4,11 @@
 	import {
 		CARD_VALUES,
 		NO_OF_CARD_SLOT,
+		GameSettings,
 		getRandomDifferentColorSuits
 	} from '$lib/components/shared.svelte';
 	import type { CardType } from '$lib/components/shared.svelte';
-	import {
-		initCardStacks,
-		eventStore,
-		dispatch,
-		populateInitCardStacksTo
-	} from '$lib/eventStore.svelte';
+	import { initCardStacks, eventStore, populateInitCardStacksTo } from '$lib/eventStore.svelte';
 
 	import CheckmarkButton from '$lib/components/CheckmarkButton.svelte';
 	import StarButton from '$lib/components/StarButton.svelte';
@@ -32,7 +28,7 @@
 		return arr;
 	}
 
-	function pickCards<T>(array: Array<T>, noOfCards: number) {
+	function keepNoOfCardsForDraw<T>(array: Array<T>, noOfCards: number) {
 		//ratio = 0.6) {
 		const shuffled = shuffleArray(array);
 		// const splitIndex = Math.floor(shuffled.length * ratio);
@@ -44,14 +40,16 @@
 		};
 	}
 
-	const randomSuits = getRandomDifferentColorSuits();
-
-	function generateCardSuites() {
+	function generateCardSuites(totalDecks: number) {
 		const cardsData: CardType[] = [];
 
 		// generate total 6 set of cards based on 2 suits
+		const randomSuits = getRandomDifferentColorSuits();
+		const nofOfLoop = randomSuits.length > 0 ? totalDecks / randomSuits.length : 0;
+
 		let counter = 1;
-		for (let i = 0; i < 3; i++) {
+
+		for (let i = 0; i < nofOfLoop; i++) {
 			for (const suit of randomSuits) {
 				CARD_VALUES.forEach((value, index) => {
 					cardsData.push({
@@ -69,23 +67,23 @@
 		return cardsData;
 	}
 
-	let remainingCards: CardType[] = $state([]);
-
 	function initCards() {
 		// no action if cardStacks already have card
 		if (!initCardStacks.display.every((cardSlot) => cardSlot.length === 0)) {
+			console.log('no reset');
 			return;
 		}
 
-		let displayedCards: CardType[] = [];
-		const cardsData = generateCardSuites();
+		const totalDecks = GameSettings.difficultyMode.simple.totalDeck;
+		const cardsData = generateCardSuites(totalDecks);
 
 		// Choose 10 random cards
-		const pickResuts = pickCards(cardsData, topN);
-		displayedCards = [...pickResuts.picked];
-		remainingCards = [...pickResuts.remaining];
+		const pickResuts = keepNoOfCardsForDraw(
+			cardsData,
+			GameSettings.difficultyMode.simple.noOfDrawRound * NO_OF_CARD_SLOT
+		);
 
-		displayedCards.forEach((dcard, index) => {
+		pickResuts.picked.forEach((dcard, index) => {
 			const slotIndex = index % NO_OF_CARD_SLOT;
 			initCardStacks.display[slotIndex].push(dcard);
 		});
@@ -107,10 +105,8 @@
 		});
 		initCardStacks.remaining.push(...pickResuts.remaining);
 		populateInitCardStacksTo(eventStore.cards);
+		eventStore.totalDeck = totalDecks;
 	}
-
-	const topN = 50; //10;
-	const noOfStacks = topN / NO_OF_CARD_SLOT;
 
 	onMount(() => {
 		initCards();

@@ -2,13 +2,7 @@
 	import { flip } from 'svelte/animate';
 	import { send, receive } from './transition';
 
-	import {
-		winCardStacks,
-		CardSuit,
-		CardColors,
-		CARD_VALUES,
-		updateDraggableStatus
-	} from './shared.svelte';
+	import { CardSuit, CardColors, CARD_VALUES } from './shared.svelte';
 	import type { CardType, CardSystemProps, Position } from './shared.svelte';
 	import { eventStore, dispatch } from '$lib/eventStore.svelte';
 
@@ -55,14 +49,26 @@
 		}
 
 		let isValid = true;
-		for (let i = 0, j = currentCardStack.length - 1; i < CARD_VALUES.length && j >= 0; i++, j--) {
-			if (CARD_VALUES[i] !== currentCardStack[j].value) {
+		let currentCardStackLastIndex = currentCardStack.length - 1;
+		const lastSuit = currentCardStack[currentCardStackLastIndex].suit;
+		for (let i = 0, j = currentCardStackLastIndex; i < CARD_VALUES.length && j >= 0; i++, j--) {
+			if (CARD_VALUES[i] !== currentCardStack[j].value || lastSuit !== currentCardStack[j].suit) {
 				isValid = false;
 				break;
 			}
 		}
 
 		return isValid;
+	}
+
+	function checkIfIsWinning() {
+		const completedCount = eventStore.cards.completed.length - 1; // exclude empty slot for animation used.
+
+		if (eventStore.totalDeck === completedCount) {
+			return true;
+		}
+
+		return false;
 	}
 
 	// Handle drop
@@ -84,9 +90,6 @@
 			}
 
 			if (isValidToDrop) {
-				// cardStacks[dragOverIndex] = [...newCardStack, ...cardsToMove];
-				// oldCardStack.splice(draggedStackPosition, cardsToMove.length);
-
 				dispatch({
 					type: 'move',
 					payload: {
@@ -104,6 +107,10 @@
 							dragOverIndex: dragOverIndex
 						}
 					});
+
+					if (checkIfIsWinning()) {
+						console.log('win');
+					}
 				}
 			}
 		}
@@ -239,7 +246,7 @@
 			{/each}
 		</div>
 	{/each}
-	<div
+	<!-- <div
 		class="pointer-events-none fixed"
 		style={`
           left: ${dragPosition.x - dragOffset.x}px;
@@ -262,5 +269,5 @@
               `}
 			></div>
 		</div>
-	</div>
+	</div> -->
 </div>

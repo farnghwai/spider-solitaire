@@ -71,6 +71,13 @@ export const CARD_VALUES = [
 
 export const NO_OF_CARD_SLOT = 10;
 
+// multiple of 10 (NO_OF_SLOT
+export const GameSettings = {
+	difficultyMode: {
+		simple: { totalDeck: 6, noOfDrawRound: 5 }
+	}
+};
+
 export interface CardType {
 	id: number;
 	value: (typeof CARD_VALUES)[number];
@@ -100,14 +107,6 @@ export interface Position {
 	x: number;
 	y: number;
 }
-
-export const cardStacks: CardType[][] = $state(
-	Array(NO_OF_CARD_SLOT)
-		.fill([])
-		.map(() => [])
-);
-
-export const winCardStacks: CardType[][] = $state([[]]);
 
 export const updateDraggableStatus = (currentStack: CardType[]) => {
 	if (currentStack.length > 0) {

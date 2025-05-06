@@ -15,7 +15,7 @@
 	});
 </script>
 
-<div class="absolute top-20 left-5 grid grid-cols-1 gap-2">
+<div class="absolute top-16 left-5 grid grid-cols-1 gap-1">
 	{#each eventStore.cards.completed as stackedCards, index}
 		<div class="grid grid-cols-subgrid grid-rows-subgrid">
 			{#each stackedCards as stackedCard, stackPosition (stackedCard.id)}

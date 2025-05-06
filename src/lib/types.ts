@@ -40,6 +40,7 @@ export interface GameState {
 	cards: CardStatus;
 	history: Action[];
 	future: Action[];
+	totalDeck: number;
 }
 
 export type HanderType = {

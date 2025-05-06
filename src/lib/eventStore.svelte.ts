@@ -15,7 +15,8 @@ export const initCardStacks = $state<CardStatus>({
 export const eventStore = $state<GameState>({
 	cards: { display: [], remaining: [], completed: [] },
 	history: [],
-	future: []
+	future: [],
+	totalDeck: 0
 });
 
 export const populateInitCardStacksTo = (cardStatus: CardStatus) => {
