@@ -16,7 +16,8 @@ export const eventStore = $state<GameState>({
 	cards: { display: [], remaining: [], completed: [] },
 	history: [],
 	future: [],
-	totalDeck: 0
+	totalDeck: 0,
+	hasWin: false
 });
 
 export const populateInitCardStacksTo = (cardStatus: CardStatus) => {
@@ -90,6 +91,11 @@ const handlers: HanderType = {
 		newCompletdState.push([]);
 
 		return { ...state, display: newDisplayState, completed: newCompletdState };
+	},
+
+	win: (state, action) => {
+		eventStore.hasWin = true;
+		return { ...state };
 	}
 };
 

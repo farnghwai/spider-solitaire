@@ -109,7 +109,10 @@
 					});
 
 					if (checkIfIsWinning()) {
-						console.log('win');
+						dispatch({
+							type: 'win',
+							payload: null
+						});
 					}
 				}
 			}

@@ -1,8 +1,8 @@
 ## Features
 - [x] Win Card deck
-- [-] Undo [Partially done, not yet test win deck]
+- [x] Undo [Partially done, not yet test win deck]
 - [ ] Card Pattern
-- [ ] Winning Animation
+- [x] Winning Animation
 - [ ] Flip card
 - [ ] Settings
 - [ ] PWA App

@@ -15,6 +15,7 @@
 	import CompletedDeck from '$lib/components/CompletedDeck.svelte';
 	import DrawPileButton from '$lib/components/DrawPileButton.svelte';
 	import Toolbar from '$lib/components/Toolbar.svelte';
+	import WinningOverlay from '$lib/components/WinningOverlay.svelte';
 
 	// reference: https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
 	// suggest by ChatGPT GPT-4o
@@ -70,7 +71,6 @@
 	function initCards() {
 		// no action if cardStacks already have card
 		if (!initCardStacks.display.every((cardSlot) => cardSlot.length === 0)) {
-			console.log('no reset');
 			return;
 		}
 
@@ -170,4 +170,6 @@
 
 	<!-- Toolbar -->
 	<Toolbar />
+
+	<WinningOverlay />
 </div>

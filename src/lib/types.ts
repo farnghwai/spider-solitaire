@@ -5,7 +5,7 @@ import type { CardType } from './components/shared.svelte';
 export type CardStatus = { display: CardType[][]; remaining: CardType[]; completed: CardType[][] };
 
 // Step 1: Define allowed action types
-export type ActionType = 'drawPile' | 'move' | 'deckCompleted';
+export type ActionType = 'drawPile' | 'move' | 'deckCompleted' | 'win';
 
 interface IAction {
 	type: ActionType;
@@ -27,8 +27,13 @@ export interface DeckCompletedAction extends IAction {
 	payload: { dragOverIndex: number };
 }
 
+export interface WinAction extends IAction {
+	type: 'win';
+	payload: null;
+}
+
 // Step 3: Union of all action types
-export type Action = DrawPileAction | MoveAction | DeckCompletedAction;
+export type Action = DrawPileAction | MoveAction | DeckCompletedAction | WinAction;
 
 // Step 4: Extract-specific action by type
 export type ActionMap = {
@@ -41,6 +46,7 @@ export interface GameState {
 	history: Action[];
 	future: Action[];
 	totalDeck: number;
+	hasWin: boolean;
 }
 
 export type HanderType = {
