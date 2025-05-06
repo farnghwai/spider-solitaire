@@ -70,7 +70,7 @@
 		event.preventDefault();
 
 		if (draggedCard && draggedIndex !== -1 && draggedStackPosition !== -1) {
-			let newCardStack = eventStore.items[dragOverIndex];
+			let newCardStack = eventStore.cards.display[dragOverIndex];
 			let isValidToDrop = false;
 			if (newCardStack.length === 0) {
 				isValidToDrop = true;
@@ -96,30 +96,21 @@
 					}
 				});
 
-				const oldCardStack = eventStore.items[draggedIndex];
-				//const cardsToMove = oldCardStack.slice(draggedStackPosition);
-
-				updateDraggableStatus(oldCardStack);
-
-				const dragOverCardStack = eventStore.items[dragOverIndex];
+				const dragOverCardStack = eventStore.cards.display[dragOverIndex];
 				if (checkIfIsCompleteSuitStack(dragOverCardStack)) {
-					const cardValueCount = CARD_VALUES.length;
-					const currentWinCardDeck = dragOverCardStack.splice(
-						dragOverCardStack.length - cardValueCount,
-						cardValueCount
-					);
-
-					const winCardStacksCount = winCardStacks.length - 1;
-					winCardStacks[winCardStacksCount].push(...currentWinCardDeck);
-					winCardStacks.push([]);
-					// winCardStacks.unshift(currentWinCardDeck);
+					dispatch({
+						type: 'deckCompleted',
+						payload: {
+							dragOverIndex: dragOverIndex
+						}
+					});
 				}
 			}
 		}
 	}
 
 	function handleDragOver(event: DragEvent, index: number) {
-		const newCardStack = eventStore.items[index];
+		const newCardStack = eventStore.cards.display[index];
 		if (draggedCard && newCardStack.length > 0) {
 			const newCardStackLastPosition = newCardStack.length - 1;
 			const newLastCard = newCardStack[newCardStackLastPosition];
@@ -184,7 +175,7 @@
 <svelte:document onmousemove={handleDocumentMouseMove} onmouseup={handleDocumentMouseUp} />
 
 <div class="mb-5 flex justify-center gap-2">
-	{#each eventStore.items as stackedCards, index}
+	{#each eventStore.cards.display as stackedCards, index}
 		<div
 			class={[
 				'relative h-44 w-28 rounded-lg border-2 border-dashed border-gray-300   ',

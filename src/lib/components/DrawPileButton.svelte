@@ -11,8 +11,8 @@
 	// let { onClick }: DrawPileProps = $props();
 	function handleDrawPileClick(event: MouseEvent) {
 		const remaingCount =
-			eventStore.remainingItems.length < NO_OF_CARD_SLOT
-				? eventStore.remainingItems.length
+			eventStore.cards.remaining.length < NO_OF_CARD_SLOT
+				? eventStore.cards.remaining.length
 				: NO_OF_CARD_SLOT;
 		if (remaingCount > 0) {
 			dispatch({
@@ -26,7 +26,7 @@
 </script>
 
 <div class="absolute right-5 bottom-5">
-	{#if eventStore.remainingItems.length > 0}
+	{#if eventStore.cards.remaining.length > 0}
 		<button
 			aria-label="Draw Pile"
 			class=" flex h-40 w-24 scale-90 cursor-pointer items-center justify-center rounded-md bg-white p-1 shadow-md transition-transform duration-100 ease-in-out hover:scale-100"
@@ -39,11 +39,11 @@
 						fill="black"
 					/>
 				</svg>
-				<span>{eventStore.remainingItems.length}</span>
+				<span>{eventStore.cards.remaining.length}</span>
 			</div>
 		</button>
 	{/if}
-	{#each eventStore.remainingItems as stackedCard, stackPosition (stackedCard.id)}
+	{#each eventStore.cards.remaining as stackedCard, stackPosition (stackedCard.id)}
 		{@const suitSymbol = CardSuit[stackedCard.suit].icon}
 
 		<div

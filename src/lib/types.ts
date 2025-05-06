@@ -2,10 +2,10 @@
 
 import type { CardType } from './components/shared.svelte';
 
-export type CardStatus = { display: CardType[][]; remaining: CardType[] };
+export type CardStatus = { display: CardType[][]; remaining: CardType[]; completed: CardType[][] };
 
 // Step 1: Define allowed action types
-export type ActionType = 'drawPile' | 'move';
+export type ActionType = 'drawPile' | 'move' | 'deckCompleted';
 
 interface IAction {
 	type: ActionType;
@@ -22,8 +22,13 @@ export interface MoveAction extends IAction {
 	payload: { oldIndex: number; draggedStackPosition: number; newIndex: number };
 }
 
+export interface DeckCompletedAction extends IAction {
+	type: 'deckCompleted';
+	payload: { dragOverIndex: number };
+}
+
 // Step 3: Union of all action types
-export type Action = DrawPileAction | MoveAction;
+export type Action = DrawPileAction | MoveAction | DeckCompletedAction;
 
 // Step 4: Extract-specific action by type
 export type ActionMap = {
@@ -31,17 +36,12 @@ export type ActionMap = {
 };
 
 // Step 5: Define application state structure
-export interface AppState {
-	items: CardType[][];
-	remainingItems: CardType[];
+export interface GameState {
+	cards: CardStatus;
 	history: Action[];
 	future: Action[];
 }
 
 export type HanderType = {
-	[K in ActionType]: (
-		state: CardType[][],
-		remaining: CardType[],
-		action: ActionMap[K]
-	) => CardStatus;
+	[K in ActionType]: (state: CardStatus, action: ActionMap[K]) => CardStatus;
 };

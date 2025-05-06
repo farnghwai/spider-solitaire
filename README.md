@@ -5,7 +5,7 @@
 - [ ] Winning Animation
 - [ ] Flip card
 - [ ] Settings
-
+- [ ] PWA App
 
 ## VS Code Extensions
 1. PrettierPrettier - Code formatter

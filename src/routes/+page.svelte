@@ -16,7 +16,7 @@
 
 	import CheckmarkButton from '$lib/components/CheckmarkButton.svelte';
 	import StarButton from '$lib/components/StarButton.svelte';
-	import WinCardSuitDeck from '$lib/components/WinCardSuitDeck.svelte';
+	import CompletedDeck from '$lib/components/CompletedDeck.svelte';
 	import DrawPileButton from '$lib/components/DrawPileButton.svelte';
 	import Toolbar from '$lib/components/Toolbar.svelte';
 
@@ -106,7 +106,7 @@
 			}
 		});
 		initCardStacks.remaining.push(...pickResuts.remaining);
-		populateInitCardStacksTo({ display: eventStore.items, remaining: eventStore.remainingItems });
+		populateInitCardStacksTo(eventStore.cards);
 	}
 
 	const topN = 50; //10;
@@ -161,7 +161,7 @@
 		<CardSystem />
 
 		<!-- WinCardSuitDeck Pile -->
-		<WinCardSuitDeck />
+		<CompletedDeck />
 
 		<!-- Draw Pile -->
 		<DrawPileButton />
