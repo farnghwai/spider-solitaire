@@ -7,7 +7,7 @@
 	import UndoButton from '$lib/components/UndoButton.svelte';
 </script>
 
-<div class="bg-opacity-30 flex justify-center gap-4 bg-black p-2.5">
+<div class="flex justify-center gap-1 bg-black/30 p-1 md:gap-4 md:p-2.5">
 	<!-- Settings Button -->
 	<SettingsButton />
 

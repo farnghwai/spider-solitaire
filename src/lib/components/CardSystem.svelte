@@ -188,7 +188,7 @@
 	{#each eventStore.cards.display as stackedCards, index}
 		<div
 			class={[
-				'relative h-44 w-28 rounded-lg border-2 border-dashed border-gray-300   ',
+				'relative h-22 w-14 rounded-lg border-2 border-dashed border-gray-300 md:h-44 md:w-28',
 				dragOverIndex === index ? 'border-blue-400' : ''
 			]}
 			data-index={index}
@@ -203,7 +203,7 @@
 				{@const isDragOver = dragOverIndex === index && stackedCards.length - 1 === stackPosition}
 
 				<div
-					class="absolute top-[calc(var(--spacing)*var(--stackOffset))] h-full w-full p-2"
+					class="absolute top-[calc(var(--spacing)*var(--stackOffset))] h-full w-full p-1 md:p-2"
 					style="--stackOffset: {stackOffset};"
 					animate:flip={{ duration: 300 }}
 					in:receive={{ key: stackedCard.id }}
@@ -214,7 +214,7 @@
 						aria-grabbed={stackedCard.isBeingDragged ? true : false}
 						id="card-c-{index}-s-{stackPosition}"
 						class={[
-							'flex h-full flex-col rounded-lg border border-gray-200  shadow-sm  select-none',
+							'flex h-full flex-col rounded-lg border border-gray-200 shadow-sm select-none',
 							stackedCard.isDraggable && 'cursor-grab hover:-translate-y-1 hover:shadow-md',
 							stackedCard.isBeingDragged && 'cursor-grabbing opacity-100',
 							isDragOver ? 'bg-amber-100 ring-2 ring-amber-500' : 'bg-white',
@@ -227,21 +227,21 @@
 					>
 						<div
 							class={[
-								'h-1.5 w-full rounded-t-md',
-								stackedCard.isDraggable && 'border-t-2 border-t-teal-400'
+								'h-0.5 w-full rounded-t-md md:h-1.5',
+								stackedCard.isDraggable && 'border-t-1 border-t-teal-400 md:border-t-2'
 							]}
 							style="background: repeating-linear-gradient(90deg, #ff9999, #ff9999 3px, white 3px, white 6px);"
 						></div>
 
-						<div class="flex justify-between px-2 text-xl">
+						<div class="flex justify-between px-1 text-base md:px-2 md:text-xl">
 							<div class=" font-bold">{stackedCard.value}</div>
 							<div class=" font-bold">{suitSymbol}</div>
 						</div>
-						<div class="flex grow items-center justify-center text-7xl">
+						<div class="flex grow items-center justify-center text-4xl md:text-7xl">
 							{suitSymbol}
 						</div>
 						<div
-							class="h-1.5 w-full rounded-b-md"
+							class="h-0.5 w-full rounded-b-md md:h-1.5"
 							style="background: repeating-linear-gradient(90deg, #ff9999, #ff9999 3px, white 3px, white 6px);"
 						></div>
 					</div>

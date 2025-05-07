@@ -18,22 +18,22 @@
 {#if eventStore.hasWin}
 	<div class="fixed inset-0 z-[200] flex items-center justify-center bg-black/50">
 		<!-- Trophy and winning text -->
-		<div class={['flex  flex-col items-center']}>
-			<div class="mb-6 text-8xl text-yellow-400">🏆</div>
+		<div class={['flex flex-col items-center']}>
+			<div class="mb-4 text-8xl text-yellow-400 md:mb-6">🏆</div>
 			<div
 				class={[
-					'mb-4  text-center text-5xl font-bold tracking-wide text-white',
+					'mb-2 text-center text-2xl font-bold tracking-wide text-white md:mb-4 md:text-5xl',
 					showWinAnimation && 'animate-pulse'
 				]}
 			>
 				YOU WIN!
 			</div>
 			<div
-				class="rounded-full bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 px-6 py-3 text-xl font-bold text-white shadow-lg"
+				class="rounded-full bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 px-3 py-1.5 text-base font-bold text-white shadow-lg md:px-6 md:py-3 md:text-xl"
 			>
 				Challenge Complete!
 			</div>
-			<div class="px-6 py-4 text-xl font-bold text-white shadow-lg">
+			<div class="px-3 py-2 text-base font-bold text-white shadow-lg md:px-6 md:py-4 md:text-xl">
 				Refresh the screen to start new game.
 			</div>
 		</div>
