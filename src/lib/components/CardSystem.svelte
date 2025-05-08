@@ -10,7 +10,8 @@
 	// let { onUpdate, onClick }: CardSystemProps = $props();
 	// $inspect('cardSystem', 'displayedCards', displayedCards.length, displayedCards);
 	// Svelte 5 reactive state
-	let draggedCard: CardType | null = $state(null);
+	let draggedCard = $state<CardType | null>(null);
+	let draggedCards = $state<CardType[]>([]);
 	let draggedIndex = $state(-1);
 	let draggedStackPosition = $state(-1);
 	let dragOverIndex = $state(-1);
@@ -18,6 +19,16 @@
 
 	let dragPosition: Position = $state({ x: 0, y: 0 });
 	let dragOffset: Position = $state({ x: 0, y: 0 });
+
+	const CARD_ID_PREFIX = 'card-c-';
+	const CARD_ID_SEPARATION = '-s-';
+
+	// touch related setup
+	let isTouchedStarted = $state(false);
+	let touchPosition: Position = $state({ x: 0, y: 0 });
+	let touchMessage = $state('');
+	let touchCardHeight = $state(0);
+	let touchCardWidth = $state(0);
 
 	// Handle drag start
 	function handleDragStart(event: DragEvent, card: CardType, index: number, stackPosition: number) {
@@ -180,43 +191,232 @@
 		// draggedItemIds = [];
 		// sourceSlotId = null;
 	};
+
+	// Touch event handlers for mobile/touch support
+	const handleTouchStart = (
+		event: TouchEvent,
+		card: CardType,
+		index: number,
+		stackPosition: number
+	) => {
+		// no action if the card is not draggable
+		if (!card.isDraggable) {
+			return;
+		}
+
+		event.stopPropagation();
+
+		// If the item is already selected, use all selected items
+		// const itemsToMove = selectedItemIds.includes(stackPosition) ? selectedItemIds : [stackPosition];
+		let selectedCardStack = eventStore.cards.display[index];
+		draggedCards = selectedCardStack.slice(stackPosition);
+
+		isTouchedStarted = true;
+		draggedCards.forEach((dcard) => {
+			dcard.isBeingDragged = true;
+		});
+		draggedIndex = index;
+		draggedStackPosition = stackPosition;
+
+		// Record the touch position
+		const touch = event.touches[0];
+		touchPosition.x = touch.clientX;
+		touchPosition.y = touch.clientY;
+
+		// copy original card dimension (height x width)
+		touchCardHeight = (event.currentTarget as HTMLDivElement).clientHeight;
+		touchCardWidth = (event.currentTarget as HTMLDivElement).clientWidth;
+	};
+
+	const handleTouchEnd = (event: TouchEvent) => {
+		if (!isTouchedStarted) return;
+		isTouchedStarted = false;
+		console.log('touch end', $state.snapshot(isTouchedStarted));
+		// Find which slot is under the touch point at the end
+		const { x, y } = touchPosition;
+		const elements = document.elementsFromPoint(x, y);
+		// Find the first slot element under the touch point
+		const slotElement = elements.find((el) => el.id.startsWith(CARD_ID_PREFIX));
+		if (slotElement) {
+			const dragOverIndex = Number(
+				slotElement.id.replace(CARD_ID_PREFIX, '').split(CARD_ID_SEPARATION)[0]
+			);
+
+			if (draggedCards.length > 0 && draggedIndex !== -1 && draggedStackPosition !== -1) {
+				let newCardStack = eventStore.cards.display[dragOverIndex];
+				let isValidToDrop = false;
+				if (newCardStack.length === 0) {
+					isValidToDrop = true;
+				} else {
+					const newCardStackLastPosition = newCardStack.length - 1;
+					const newLastCard = newCardStack[newCardStackLastPosition];
+
+					if (newLastCard.valueIndex - 1 === draggedCards[0].valueIndex) {
+						isValidToDrop = true;
+					}
+				}
+
+				if (isValidToDrop) {
+					dispatch({
+						type: 'move',
+						payload: {
+							oldIndex: draggedIndex,
+							draggedStackPosition: draggedStackPosition,
+							newIndex: dragOverIndex
+						}
+					});
+
+					const dragOverCardStack = eventStore.cards.display[dragOverIndex];
+					if (checkIfIsCompleteSuitStack(dragOverCardStack)) {
+						dispatch({
+							type: 'deckCompleted',
+							payload: {
+								dragOverIndex: dragOverIndex
+							}
+						});
+
+						if (checkIfIsWinning()) {
+							dispatch({
+								type: 'win',
+								payload: null
+							});
+						}
+					}
+				}
+			}
+		}
+
+		// reset status
+		draggedCards.forEach((dcard) => {
+			dcard.isBeingDragged = false;
+		});
+		draggedCards = [];
+
+		touchCardHeight = 0;
+		touchCardWidth = 0;
+	};
+
+	$effect(() => {
+		const handleTouchMove = (e: TouchEvent) => {
+			if (isTouchedStarted) {
+				e.preventDefault(); // Prevent scrolling while dragging
+
+				const touch = e.touches[0];
+				touchPosition.x = touch.clientX;
+				touchPosition.y = touch.clientY;
+
+				// Position the dragged element at the touch point
+				// if (draggedElement) {
+				// 	draggedElement.style.position = 'fixed';
+				// 	draggedElement.style.left = `${touch.clientX - 50}px`; // Offset by half width
+				// 	draggedElement.style.top = `${touch.clientY - 20}px`; // Offset by half height
+				// 	draggedElement.style.zIndex = '1000';
+				// 	draggedElement.style.opacity = '0.8';
+				// 	draggedElement.style.pointerEvents = 'none';
+				// }
+			}
+		};
+
+		// const handleTouchEnd = (e: TouchEvent) => {
+		// 	if (isDragging && touchPosition && draggingItemId && draggingFromSlotId) {
+		// 		// Find which slot we're over
+		// 		const elementsAtPoint = document.elementsFromPoint(touchPosition.x, touchPosition.y);
+
+		// 		let targetSlot: HTMLElement | null = null;
+
+		// 		// Find a slot element among the elements at the touch point
+		// 		for (const el of elementsAtPoint) {
+		// 			if (el.classList.contains('slot-container')) {
+		// 				targetSlot = el as HTMLElement;
+		// 				break;
+		// 			}
+		// 		}
+
+		// 		// If we found a target slot
+		// 		if (targetSlot) {
+		// 			const targetSlotId = targetSlot.dataset.slotId;
+		// 			if (targetSlotId) {
+		// 				moveItem(draggingFromSlotId, targetSlotId, draggingItemId);
+		// 			}
+		// 		}
+
+		// 		// Reset the dragged element styles
+		// 		if (draggedElement) {
+		// 			draggedElement.style.position = '';
+		// 			draggedElement.style.left = '';
+		// 			draggedElement.style.top = '';
+		// 			draggedElement.style.zIndex = '';
+		// 			draggedElement.style.opacity = '';
+		// 			draggedElement.style.pointerEvents = '';
+		// 		}
+
+		// 		// Clear drag state
+		// 		setIsDragging(false);
+		// 		setDraggedElement(null);
+		// 		setDraggingItemId(null);
+		// 		setDraggingFromSlotId(null);
+		// 		setTouchPosition(null);
+		// 	}
+		// };
+
+		// Add event listeners
+		document.addEventListener('touchmove', handleTouchMove, { passive: false });
+		// document.addEventListener('touchend', handleTouchEnd);
+
+		// Clean up
+		return () => {
+			document.removeEventListener('touchmove', handleTouchMove);
+			// document.removeEventListener('touchend', handleTouchEnd);
+		};
+	});
 </script>
 
 <svelte:document onmousemove={handleDocumentMouseMove} onmouseup={handleDocumentMouseUp} />
 
-<div class="mb-5 flex justify-center gap-2">
+<div class="mb-5 flex justify-center gap-0.5 @xl:gap-2">
 	{#each eventStore.cards.display as stackedCards, index}
 		<div
 			class={[
-				'relative h-22 w-14 rounded-lg border-2 border-dashed border-gray-300 md:h-44 md:w-28',
-				dragOverIndex === index ? 'border-blue-400' : ''
+				'relative border-dashed border-gray-300 ',
+				dragOverIndex === index ? 'border-blue-400' : '',
+				'h-16 w-10 @xl:h-22 @xl:w-14 @5xl:h-44 @5xl:w-28',
+				'rounded-lg @5xl:rounded-xl',
+				'border-1 @xl:border-2'
 			]}
 			data-index={index}
 			role="listitem"
 			ondragover={(event: DragEvent) => handleDragOver(event, index)}
 			ondrop={handleDrop}
 			ondragleave={handleDragLeave}
+			ontouchend={handleTouchEnd}
 		>
 			{#each stackedCards as stackedCard, stackPosition (stackedCard.id)}
-				{@const stackOffset = stackPosition * 9}
 				{@const suitSymbol = CardSuit[stackedCard.suit].icon}
 				{@const isDragOver = dragOverIndex === index && stackedCards.length - 1 === stackPosition}
 
 				<div
-					class="absolute top-[calc(var(--spacing)*var(--stackOffset))] h-full w-full p-1 md:p-2"
-					style="--stackOffset: {stackOffset};"
+					class={[
+						'absolute',
+						'top-[calc(var(--spacing)*var(--stackOffset)*5)]',
+						'@xl:top-[calc(var(--spacing)*var(--stackOffset)*7)]',
+						'@5xl:top-[calc(var(--spacing)*var(--stackOffset)*9)]',
+						'h-full w-full',
+						'p-0.5 @xl:p-1 @5xl:p-2'
+					]}
+					style="--stackOffset: {stackPosition};"
 					animate:flip={{ duration: 300 }}
 					in:receive={{ key: stackedCard.id }}
 					out:send={{ key: stackedCard.id }}
+					id="{CARD_ID_PREFIX}{index}-s-{stackPosition}"
 				>
 					<div
 						role="listitem"
 						aria-grabbed={stackedCard.isBeingDragged ? true : false}
-						id="card-c-{index}-s-{stackPosition}"
 						class={[
-							'flex h-full flex-col rounded-lg border border-gray-200 shadow-sm select-none',
+							'flex h-full w-full flex-col border border-gray-200 shadow-sm select-none',
+							'rounded-sm @xl:rounded-lg',
 							stackedCard.isDraggable && 'cursor-grab hover:-translate-y-1 hover:shadow-md',
-							stackedCard.isBeingDragged && 'cursor-grabbing opacity-100',
+							stackedCard.isBeingDragged && 'cursor-grabbing opacity-0',
 							isDragOver ? 'bg-amber-100 ring-2 ring-amber-500' : 'bg-white',
 							CardColors[CardSuit[stackedCard.suit].color]
 						]}
@@ -224,24 +424,33 @@
 						ondragstart={(event: DragEvent) =>
 							handleDragStart(event, stackedCard, index, stackPosition)}
 						ondragend={handleDragEnd}
+						ontouchstart={(event: TouchEvent) =>
+							handleTouchStart(event, stackedCard, index, stackPosition)}
 					>
 						<div
 							class={[
-								'h-0.5 w-full rounded-t-md md:h-1.5',
-								stackedCard.isDraggable && 'border-t-1 border-t-teal-400 md:border-t-2'
+								'w-full rounded-t-md',
+								'h-0.5 @5xl:h-1.5',
+								stackedCard.isDraggable && 'border-t-1 border-t-teal-400 @5xl:border-t-2'
 							]}
 							style="background: repeating-linear-gradient(90deg, #ff9999, #ff9999 3px, white 3px, white 6px);"
 						></div>
 
-						<div class="flex justify-between px-1 text-base md:px-2 md:text-xl">
+						<div
+							class={[
+								'flex justify-between',
+								'px-0.5 @xl:px-1 @5xl:px-2',
+								'text-xs @xl:text-base @5xl:text-xl'
+							]}
+						>
 							<div class=" font-bold">{stackedCard.value}</div>
 							<div class=" font-bold">{suitSymbol}</div>
 						</div>
-						<div class="flex grow items-center justify-center text-4xl md:text-7xl">
+						<div class="flex grow items-center justify-center text-base @xl:text-4xl @5xl:text-7xl">
 							{suitSymbol}
 						</div>
 						<div
-							class="h-0.5 w-full rounded-b-md md:h-1.5"
+							class={['w-full rounded-t-md', 'h-0.5 @5xl:h-1.5']}
 							style="background: repeating-linear-gradient(90deg, #ff9999, #ff9999 3px, white 3px, white 6px);"
 						></div>
 					</div>
@@ -249,28 +458,60 @@
 			{/each}
 		</div>
 	{/each}
-	<!-- <div
-		class="pointer-events-none fixed"
-		style={`
-          left: ${dragPosition.x - dragOffset.x}px;
-          top: ${dragPosition.y - dragOffset.y}px;
-          z-index: 9999;
-          width: 3rem;
-          height: 3rem;
-        `}
-	>
-		<div class="relative h-full w-full">
-			<div
-				class={`
-               absolute
-				h-12 w-12 rounded-md border border-white bg-gray-300 opacity-100 shadow-lg
-              `}
-				style={`
-                z-index: ${9999};
-                left: 10px;
-                top: 10px;
-              `}
-			></div>
-		</div>
-	</div> -->
 </div>
+{#if isTouchedStarted}
+	<div
+		class="pointer-events-none fixed z-[9999] flex -translate-x-1/2 -translate-y-4 items-center"
+		style={`left: ${touchPosition.x}px; top: ${touchPosition.y}px`}
+	>
+		<div class="relative flex flex-col">
+			{#each draggedCards as touchDraggedCard, touchDraggedIndex (touchDraggedCard.id)}
+				{@const touchSuitSymbol = CardSuit[touchDraggedCard.suit].icon}
+				<div
+					role="listitem"
+					aria-grabbed="true"
+					id="card-td-{touchDraggedIndex}"
+					class={[
+						'flex h-full w-full flex-col rounded-sm border border-gray-200 shadow-sm select-none',
+						'rounded-sm @xl:rounded-lg',
+						'bg-white',
+						CardColors[CardSuit[touchDraggedCard.suit].color],
+						'-translate-y-[calc(var(--spacing)*var(--stackOffset)*8.8)]',
+						'@xl:-translate-y-[calc(var(--spacing)*var(--stackOffset)*11.5)]',
+						'@5xl:-translate-y-[calc(var(--spacing)*var(--stackOffset)*30)]'
+					]}
+					style={`z-index: 9999 - ${touchDraggedIndex}; --stackOffset: ${touchDraggedIndex};`}
+					style:height={`${touchCardHeight}px`}
+					style:width={`${touchCardWidth}px`}
+				>
+					<div
+						class={[
+							'w-full rounded-t-md',
+							'h-0.5 @5xl:h-1.5',
+							touchDraggedCard.isDraggable && 'border-t-1 border-t-teal-400 @5xl:border-t-2'
+						]}
+						style="background: repeating-linear-gradient(90deg, #ff9999, #ff9999 3px, white 3px, white 6px);"
+					></div>
+
+					<div
+						class={[
+							'flex justify-between',
+							'px-0.5 @xl:px-1 @5xl:px-2',
+							'text-xs @xl:text-base @5xl:text-xl'
+						]}
+					>
+						<div class=" font-bold">{touchDraggedCard.value}</div>
+						<div class=" font-bold">{touchSuitSymbol}</div>
+					</div>
+					<div class="flex grow items-center justify-center text-base @xl:text-4xl @5xl:text-7xl">
+						{touchSuitSymbol}
+					</div>
+					<div
+						class={['w-full rounded-t-md', 'h-0.5 @5xl:h-1.5']}
+						style="background: repeating-linear-gradient(90deg, #ff9999, #ff9999 3px, white 3px, white 6px);"
+					></div>
+				</div>
+			{/each}
+		</div>
+	</div>
+{/if}

@@ -143,10 +143,10 @@
 	// }
 </script>
 
-<div class="flex min-h-screen flex-col bg-green-800 text-white select-none">
-	<div class="relative flex flex-1 flex-col p-5">
+<div class="@container flex min-h-screen flex-col bg-green-800 text-white select-none">
+	<div class="relative flex flex-1 flex-col px-1 py-5 @xl:p-5">
 		<!-- Timer -->
-		<div class="absolute top-2.5 left-2.5 text-sm">{timer}</div>
+		<!-- <div class="absolute top-2.5 left-2.5 text-sm">{timer}</div> -->
 
 		<!-- Top Row Cards -->
 		<!-- <div class="mb-5 flex justify-center gap-2">
