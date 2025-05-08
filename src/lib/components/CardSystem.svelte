@@ -1,15 +1,14 @@
 <script lang="ts">
+	import { mount, unmount } from 'svelte';
 	import { flip } from 'svelte/animate';
 	import { send, receive } from './transition';
 
 	import { CardSuit, CardColors, CARD_VALUES } from './shared.svelte';
 	import type { CardType, CardSystemProps, Position } from './shared.svelte';
 	import { eventStore, dispatch } from '$lib/eventStore.svelte';
+	import CardPreview from './CardPreview.svelte';
 
 	// Modern Svelte 5 props
-	// let { onUpdate, onClick }: CardSystemProps = $props();
-	// $inspect('cardSystem', 'displayedCards', displayedCards.length, displayedCards);
-	// Svelte 5 reactive state
 	let draggedCard = $state<CardType | null>(null);
 	let draggedCards = $state<CardType[]>([]);
 	let draggedIndex = $state(-1);
@@ -19,15 +18,19 @@
 
 	let dragPosition: Position = $state({ x: 0, y: 0 });
 	let dragOffset: Position = $state({ x: 0, y: 0 });
+	let cardSystemElem = $state<HTMLDivElement | null>(null);
 
 	const CARD_SLOT_ID_PREFIX = 'slot-';
+	const CARD_PREVIEW_ID_PREFIX = 'preview-';
 
 	// touch related setup
 	let isTouchedStarted = $state(false);
-	let touchPosition: Position = $state({ x: 0, y: 0 });
-	let touchMessage = $state('');
 	let touchCardHeight = $state(0);
 	let touchCardWidth = $state(0);
+
+	function generatePreviewId() {
+		return `${CARD_PREVIEW_ID_PREFIX}${Date.now()}`;
+	}
 
 	// Handle drag start
 	function handleDragStart(event: DragEvent, card: CardType, index: number, stackPosition: number) {
@@ -35,8 +38,17 @@
 
 		draggedCard = card;
 		draggedCard.isBeingDragged = true;
+		let selectedCardStack = eventStore.cards.display[index];
+		draggedCards = selectedCardStack.slice(stackPosition);
+		draggedCards.forEach((dcard) => {
+			dcard.isBeingDragged = true;
+		});
 		draggedIndex = index;
 		draggedStackPosition = stackPosition;
+
+		// copy original card dimension (height x width)
+		touchCardHeight = (event.currentTarget as HTMLDivElement).clientHeight;
+		touchCardWidth = (event.currentTarget as HTMLDivElement).clientWidth;
 
 		// Set data to identify the card during drag
 		if (event.dataTransfer) {
@@ -49,6 +61,28 @@
 			// 	})
 			// );
 			// Set drag image and effects
+			if (cardSystemElem) {
+				const previewId = generatePreviewId();
+				const dragPreviewElem = mount(CardPreview, {
+					target: cardSystemElem,
+					props: {
+						id: previewId,
+						cards: draggedCards,
+						dragPosition,
+						cardHeight: touchCardHeight,
+						cardWidth: touchCardWidth
+					}
+				});
+				const dragPreview = document.getElementById(previewId);
+				if (dragPreview) {
+					event.dataTransfer.setDragImage(dragPreview, 15, 15);
+				}
+				// Clean up after dragging
+				setTimeout(() => {
+					unmount(dragPreviewElem);
+				}, 0);
+			}
+
 			event.dataTransfer.effectAllowed = 'move';
 		}
 	}
@@ -154,6 +188,7 @@
 		}
 
 		draggedCard = null;
+		draggedCards = [];
 		draggedIndex = -1;
 		draggedStackPosition = -1;
 		dragOverIndex = -1;
@@ -219,8 +254,8 @@
 
 		// Record the touch position
 		const touch = event.touches[0];
-		touchPosition.x = touch.clientX;
-		touchPosition.y = touch.clientY;
+		dragPosition.x = touch.clientX;
+		dragPosition.y = touch.clientY;
 
 		// copy original card dimension (height x width)
 		touchCardHeight = (event.currentTarget as HTMLDivElement).clientHeight;
@@ -232,7 +267,7 @@
 		isTouchedStarted = false;
 
 		// Find which slot is under the touch point at the end
-		const { x, y } = touchPosition;
+		const { x, y } = dragPosition;
 		const elements = document.elementsFromPoint(x, y);
 		// Find the first slot element under the touch point
 		const slotElement =
@@ -293,6 +328,8 @@
 
 		touchCardHeight = 0;
 		touchCardWidth = 0;
+		draggedIndex = -1;
+		draggedStackPosition = -1;
 	};
 
 	$effect(() => {
@@ -301,8 +338,8 @@
 				e.preventDefault(); // Prevent scrolling while dragging
 
 				const touch = e.touches[0];
-				touchPosition.x = touch.clientX;
-				touchPosition.y = touch.clientY;
+				dragPosition.x = touch.clientX;
+				dragPosition.y = touch.clientY;
 			}
 		};
 
@@ -406,7 +443,8 @@
 							'flex h-full w-full flex-col border border-gray-200 shadow-sm select-none',
 							'rounded-sm @xl:rounded-lg',
 							stackedCard.isDraggable && 'cursor-grab hover:-translate-y-1 hover:shadow-md',
-							stackedCard.isBeingDragged && 'cursor-grabbing opacity-0',
+							stackedCard.isBeingDragged && 'cursor-grabbing',
+							isTouchedStarted && stackedCard.isBeingDragged && 'opacity-0',
 							isDragOver ? 'bg-amber-100 ring-2 ring-amber-500' : 'bg-white',
 							CardColors[CardSuit[stackedCard.suit].color]
 						]}
@@ -449,59 +487,14 @@
 		</div>
 	{/each}
 </div>
-{#if isTouchedStarted}
-	<div
-		class="pointer-events-none fixed z-[9999] flex -translate-x-1/2 -translate-y-4 items-center"
-		style={`left: ${touchPosition.x}px; top: ${touchPosition.y}px`}
-	>
-		<div class="relative flex flex-col">
-			{#each draggedCards as touchDraggedCard, touchDraggedIndex (touchDraggedCard.id)}
-				{@const touchSuitSymbol = CardSuit[touchDraggedCard.suit].icon}
-				<div
-					role="listitem"
-					aria-grabbed="true"
-					id="card-td-{touchDraggedIndex}"
-					class={[
-						'flex h-full w-full flex-col rounded-sm border border-gray-200 shadow-sm select-none',
-						'rounded-sm @xl:rounded-lg',
-						'bg-white',
-						CardColors[CardSuit[touchDraggedCard.suit].color],
-						'-translate-y-[calc(var(--spacing)*var(--stackOffset)*8.8)]',
-						'@xl:-translate-y-[calc(var(--spacing)*var(--stackOffset)*11.5)]',
-						'@5xl:-translate-y-[calc(var(--spacing)*var(--stackOffset)*30)]'
-					]}
-					style={`z-index: 9999 - ${touchDraggedIndex}; --stackOffset: ${touchDraggedIndex};`}
-					style:height={`${touchCardHeight}px`}
-					style:width={`${touchCardWidth}px`}
-				>
-					<div
-						class={[
-							'w-full rounded-t-md',
-							'h-0.5 @5xl:h-1.5',
-							touchDraggedCard.isDraggable && 'border-t-1 border-t-teal-400 @5xl:border-t-2'
-						]}
-						style="background: repeating-linear-gradient(90deg, #ff9999, #ff9999 3px, white 3px, white 6px);"
-					></div>
-
-					<div
-						class={[
-							'flex justify-between',
-							'px-0.5 @xl:px-1 @5xl:px-2',
-							'text-xs @xl:text-base @5xl:text-xl'
-						]}
-					>
-						<div class=" font-bold">{touchDraggedCard.value}</div>
-						<div class=" font-bold">{touchSuitSymbol}</div>
-					</div>
-					<div class="flex grow items-center justify-center text-base @xl:text-4xl @5xl:text-7xl">
-						{touchSuitSymbol}
-					</div>
-					<div
-						class={['w-full rounded-t-md', 'h-0.5 @5xl:h-1.5']}
-						style="background: repeating-linear-gradient(90deg, #ff9999, #ff9999 3px, white 3px, white 6px);"
-					></div>
-				</div>
-			{/each}
-		</div>
-	</div>
-{/if}
+<div bind:this={cardSystemElem} class={{ 'opacity-0': !isTouchedStarted }}>
+	{#if isTouchedStarted}
+		<CardPreview
+			id={generatePreviewId()}
+			cards={draggedCards}
+			{dragPosition}
+			cardHeight={touchCardHeight}
+			cardWidth={touchCardWidth}
+		/>
+	{/if}
+</div>
