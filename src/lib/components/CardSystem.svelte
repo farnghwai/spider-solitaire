@@ -3,10 +3,12 @@
 	import { flip } from 'svelte/animate';
 	import { send, receive } from './transition';
 
-	import { CardSuit, CardColors, CARD_VALUES } from './shared.svelte';
-	import type { CardType, CardSystemProps, Position } from './shared.svelte';
+	import { CardSuit, CARD_VALUES } from './shared.svelte';
+	import type { CardType } from './shared.svelte';
+	import type { Position } from '$lib/types';
 	import { eventStore, dispatch } from '$lib/eventStore.svelte';
 	import CardPreview from './CardPreview.svelte';
+	import PokerCard from './PokerCard.svelte';
 
 	// Modern Svelte 5 props
 	let draggedCard = $state<CardType | null>(null);
@@ -68,6 +70,7 @@
 					props: {
 						id: previewId,
 						cards: draggedCards,
+						draggedIndex: draggedIndex,
 						dragPosition,
 						cardHeight: touchCardHeight,
 						cardWidth: touchCardWidth
@@ -75,7 +78,7 @@
 				});
 				const dragPreview = document.getElementById(previewId);
 				if (dragPreview) {
-					event.dataTransfer.setDragImage(dragPreview, 15, 15);
+					event.dataTransfer.setDragImage(dragPreview, 30, 15);
 				}
 				// Clean up after dragging
 				setTimeout(() => {
@@ -187,12 +190,7 @@
 			draggedCard.isBeingDragged = false;
 		}
 
-		draggedCard = null;
-		draggedCards = [];
-		draggedIndex = -1;
-		draggedStackPosition = -1;
-		dragOverIndex = -1;
-		isBeingDragged = false;
+		resetStatus();
 	}
 
 	function handleDragLeave() {
@@ -321,6 +319,10 @@
 		}
 
 		// reset status
+		resetStatus();
+	};
+
+	function resetStatus() {
 		draggedCards.forEach((dcard) => {
 			dcard.isBeingDragged = false;
 		});
@@ -330,7 +332,11 @@
 		touchCardWidth = 0;
 		draggedIndex = -1;
 		draggedStackPosition = -1;
-	};
+
+		draggedCard = null;
+		dragOverIndex = -1;
+		isBeingDragged = false;
+	}
 
 	$effect(() => {
 		const handleTouchMove = (e: TouchEvent) => {
@@ -418,7 +424,6 @@
 			ontouchend={handleTouchEnd}
 		>
 			{#each stackedCards as stackedCard, stackPosition (stackedCard.id)}
-				{@const suitSymbol = CardSuit[stackedCard.suit].icon}
 				{@const isDragOver = dragOverIndex === index && stackedCards.length - 1 === stackPosition}
 
 				<div
@@ -436,52 +441,16 @@
 					out:send={{ key: stackedCard.id }}
 					id="card-c-{index}-s-{stackPosition}"
 				>
-					<div
-						role="listitem"
-						aria-grabbed={stackedCard.isBeingDragged ? true : false}
-						class={[
-							'flex h-full w-full flex-col border border-gray-200 shadow-sm select-none',
-							'rounded-sm @xl:rounded-lg',
-							stackedCard.isDraggable && 'cursor-grab hover:-translate-y-1 hover:shadow-md',
-							stackedCard.isBeingDragged && 'cursor-grabbing',
-							isTouchedStarted && stackedCard.isBeingDragged && 'opacity-0',
-							isDragOver ? 'bg-amber-100 ring-2 ring-amber-500' : 'bg-white',
-							CardColors[CardSuit[stackedCard.suit].color]
-						]}
-						draggable={stackedCard.isDraggable}
-						ondragstart={(event: DragEvent) =>
-							handleDragStart(event, stackedCard, index, stackPosition)}
-						ondragend={handleDragEnd}
-						ontouchstart={(event: TouchEvent) =>
-							handleTouchStart(event, stackedCard, index, stackPosition)}
-					>
-						<div
-							class={[
-								'w-full rounded-t-md',
-								'h-0.5 @5xl:h-1.5',
-								stackedCard.isDraggable && 'border-t-1 border-t-teal-400 @5xl:border-t-2'
-							]}
-							style="background: repeating-linear-gradient(90deg, #ff9999, #ff9999 3px, white 3px, white 6px);"
-						></div>
-
-						<div
-							class={[
-								'flex justify-between',
-								'px-0.5 @xl:px-1 @5xl:px-2',
-								'text-xs @xl:text-base @5xl:text-xl'
-							]}
-						>
-							<div class=" font-bold">{stackedCard.value}</div>
-							<div class=" font-bold">{suitSymbol}</div>
-						</div>
-						<div class="flex grow items-center justify-center text-base @xl:text-4xl @5xl:text-7xl">
-							{suitSymbol}
-						</div>
-						<div
-							class={['w-full rounded-t-md', 'h-0.5 @5xl:h-1.5']}
-							style="background: repeating-linear-gradient(90deg, #ff9999, #ff9999 3px, white 3px, white 6px);"
-						></div>
-					</div>
+					<PokerCard
+						{index}
+						{stackPosition}
+						card={stackedCard}
+						hideWhenPreview={stackedCard.isBeingDragged}
+						{isDragOver}
+						onDragStart={handleDragStart}
+						onDragEnd={handleDragEnd}
+						onTouchStart={handleTouchStart}
+					/>
 				</div>
 			{/each}
 		</div>
@@ -492,6 +461,7 @@
 		<CardPreview
 			id={generatePreviewId()}
 			cards={draggedCards}
+			{draggedIndex}
 			{dragPosition}
 			cardHeight={touchCardHeight}
 			cardWidth={touchCardWidth}

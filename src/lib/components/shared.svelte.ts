@@ -87,27 +87,6 @@ export interface CardType {
 	isBeingDragged: boolean;
 }
 
-export interface CardSystemProps {
-	//displayedCards: CardType[]; // Adjust the type as needed
-	onUpdate: (newState: any) => void; // Adjust the type as needed
-	onClick: (cardId: string) => void; // Adjust the type as needed
-}
-
-export interface CardProps {
-	card: CardType;
-	index: number;
-	isDragOver: boolean;
-	stackPosition: number;
-	// onCardClick: () => void;
-	onDragStart: (event: DragEvent) => void;
-	onDragEnd: () => void;
-}
-
-export interface Position {
-	x: number;
-	y: number;
-}
-
 export const updateDraggableStatus = (currentStack: CardType[]) => {
 	if (currentStack.length > 0) {
 		const currentStackLastIndex = currentStack.length - 1;

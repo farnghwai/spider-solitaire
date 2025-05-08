@@ -1,5 +1,6 @@
 // types.ts
 
+import type { ClassValue } from 'svelte/elements';
 import type { CardType } from './components/shared.svelte';
 
 export type CardStatus = { display: CardType[][]; remaining: CardType[]; completed: CardType[][] };
@@ -52,3 +53,39 @@ export interface GameState {
 export type HanderType = {
 	[K in ActionType]: (state: CardStatus, action: ActionMap[K]) => CardStatus;
 };
+
+export interface Position {
+	x: number;
+	y: number;
+}
+
+export interface CardProps {
+	card: CardType;
+	index: number;
+	isDragOver: boolean;
+	stackPosition: number;
+	// onCardClick: () => void;
+	onDragStart: (event: DragEvent) => void;
+	onDragEnd: () => void;
+}
+
+export interface PokerCardProps {
+	card: CardType;
+	index: number;
+	stackPosition: number;
+	isDragOver: boolean;
+	hideWhenPreview: boolean;
+	onDragStart?: (event: DragEvent, card: CardType, index: number, stackPosition: number) => void;
+	onDragEnd?: () => void;
+	onTouchStart?: (event: TouchEvent, card: CardType, index: number, stackPosition: number) => void;
+	class?: ClassValue;
+}
+
+export interface CardPreviewProps {
+	id: string;
+	cards: CardType[];
+	draggedIndex: number;
+	dragPosition: Position;
+	cardHeight: number;
+	cardWidth: number;
+}
