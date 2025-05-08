@@ -20,8 +20,7 @@
 	let dragPosition: Position = $state({ x: 0, y: 0 });
 	let dragOffset: Position = $state({ x: 0, y: 0 });
 
-	const CARD_ID_PREFIX = 'card-c-';
-	const CARD_ID_SEPARATION = '-s-';
+	const CARD_SLOT_ID_PREFIX = 'slot-';
 
 	// touch related setup
 	let isTouchedStarted = $state(false);
@@ -231,16 +230,16 @@
 	const handleTouchEnd = (event: TouchEvent) => {
 		if (!isTouchedStarted) return;
 		isTouchedStarted = false;
-		console.log('touch end', $state.snapshot(isTouchedStarted));
+
 		// Find which slot is under the touch point at the end
 		const { x, y } = touchPosition;
 		const elements = document.elementsFromPoint(x, y);
 		// Find the first slot element under the touch point
-		const slotElement = elements.find((el) => el.id.startsWith(CARD_ID_PREFIX));
+		const slotElement =
+			elements?.length > 0 ? elements[0].closest(`[id^=${CARD_SLOT_ID_PREFIX}]`) : null;
+
 		if (slotElement) {
-			const dragOverIndex = Number(
-				slotElement.id.replace(CARD_ID_PREFIX, '').split(CARD_ID_SEPARATION)[0]
-			);
+			const dragOverIndex = Number((slotElement as HTMLDivElement).dataset.index);
 
 			if (draggedCards.length > 0 && draggedIndex !== -1 && draggedStackPosition !== -1) {
 				let newCardStack = eventStore.cards.display[dragOverIndex];
@@ -304,16 +303,6 @@
 				const touch = e.touches[0];
 				touchPosition.x = touch.clientX;
 				touchPosition.y = touch.clientY;
-
-				// Position the dragged element at the touch point
-				// if (draggedElement) {
-				// 	draggedElement.style.position = 'fixed';
-				// 	draggedElement.style.left = `${touch.clientX - 50}px`; // Offset by half width
-				// 	draggedElement.style.top = `${touch.clientY - 20}px`; // Offset by half height
-				// 	draggedElement.style.zIndex = '1000';
-				// 	draggedElement.style.opacity = '0.8';
-				// 	draggedElement.style.pointerEvents = 'none';
-				// }
 			}
 		};
 
@@ -383,6 +372,7 @@
 				'rounded-lg @5xl:rounded-xl',
 				'border-1 @xl:border-2'
 			]}
+			id="{CARD_SLOT_ID_PREFIX}{index}"
 			data-index={index}
 			role="listitem"
 			ondragover={(event: DragEvent) => handleDragOver(event, index)}
@@ -407,7 +397,7 @@
 					animate:flip={{ duration: 300 }}
 					in:receive={{ key: stackedCard.id }}
 					out:send={{ key: stackedCard.id }}
-					id="{CARD_ID_PREFIX}{index}-s-{stackPosition}"
+					id="card-c-{index}-s-{stackPosition}"
 				>
 					<div
 						role="listitem"
