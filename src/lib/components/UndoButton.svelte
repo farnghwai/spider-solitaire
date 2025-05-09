@@ -9,7 +9,7 @@
 
 <button
 	class={[
-		'flex cursor-pointer items-center justify-center rounded bg-gray-800 px-4 py-2 hover:bg-gray-700',
+		'flex cursor-pointer items-center justify-center rounded bg-gray-800 px-4 py-2 text-white hover:bg-gray-700',
 		'text-sm @2xl:text-base'
 	]}
 	onclick={handleUndo}

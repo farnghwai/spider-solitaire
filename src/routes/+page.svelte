@@ -35,7 +35,7 @@
 	});
 </script>
 
-<div class="@container flex min-h-screen min-w-xs flex-col bg-green-800 text-white">
+<div class="@container flex min-h-screen min-w-xs flex-col bg-green-800">
 	<div class="hidden noscript:block">Please enable JavaScript to use this app.</div>
 
 	{#if !isLoading}

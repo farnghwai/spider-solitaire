@@ -48,7 +48,7 @@
 						fill="black"
 					/>
 				</svg>
-				<span class={['text-xs @xl:text-sm @5xl:text-base']}
+				<span class={['text-xs @xl:text-sm @5xl:text-base', 'text-white']}
 					>{eventStore.cards.remaining.length}</span
 				>
 			</div>

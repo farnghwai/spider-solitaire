@@ -6,6 +6,8 @@
 	import { RESPONSIVE_CLASS } from '$lib/constants';
 
 	let { handleConfirm } = $props();
+	let showUndoButton = $state(true);
+	console.log($inspect(showUndoButton));
 </script>
 
 <div
@@ -16,11 +18,13 @@
 	]}
 >
 	<!-- Settings Button -->
-	<SettingsButton />
+	<SettingsButton bind:showUndoButton />
 
 	<!-- Game Button with Red Dot -->
 	<GameNewButton {handleConfirm} />
 
-	<!-- Undo Button -->
-	<UndoButton />
+	{#if showUndoButton}
+		<!-- Undo Button -->
+		<UndoButton />
+	{/if}
 </div>
