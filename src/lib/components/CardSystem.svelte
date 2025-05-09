@@ -5,12 +5,13 @@
 
 	import type { Position, CardType } from '$lib/types';
 	import { eventStore, dispatch } from '$lib/eventStore.svelte';
-	import { RESPONSIVE_CLASS, CARD_VALUES } from '$lib/constants';
+	import { RESPONSIVE_CLASS } from '$lib/constants';
+	import { checkIfIsCompleteSuitStack, checkIfIsWinning, checkIsValidDrop } from '$lib/gameRules';
+
 	import CardPreview from './CardPreview.svelte';
 	import PokerCard from './PokerCard.svelte';
 
 	// Modern Svelte 5 props
-	let draggedCard = $state<CardType | null>(null);
 	let draggedCards = $state<CardType[]>([]);
 	let draggedIndex = $state(-1);
 	let draggedStackPosition = $state(-1);
@@ -18,7 +19,6 @@
 	let isBeingDragged = $state(false);
 
 	let dragPosition: Position = $state({ x: 0, y: 0 });
-	let dragOffset: Position = $state({ x: 0, y: 0 });
 	let cardSystemElem = $state<HTMLDivElement | null>(null);
 
 	const CARD_SLOT_ID_PREFIX = 'slot-';
@@ -26,19 +26,52 @@
 
 	// touch related setup
 	let isTouchedStarted = $state(false);
-	let touchCardHeight = $state(0);
-	let touchCardWidth = $state(0);
+	let cardHeight = $state(0);
+	let cardWidth = $state(0);
 
 	function generatePreviewId() {
 		return `${CARD_PREVIEW_ID_PREFIX}${Date.now()}`;
+	}
+
+	function moveItems() {
+		if (draggedCards.length > 0 && draggedIndex !== -1 && draggedStackPosition !== -1) {
+			let newCardStack = eventStore.cards.display[dragOverIndex];
+			let isValidToDrop = checkIsValidDrop(newCardStack, draggedCards);
+
+			if (isValidToDrop) {
+				dispatch({
+					type: 'move',
+					payload: {
+						oldIndex: draggedIndex,
+						draggedStackPosition: draggedStackPosition,
+						newIndex: dragOverIndex
+					}
+				});
+
+				const dragOverCardStack = eventStore.cards.display[dragOverIndex];
+				if (checkIfIsCompleteSuitStack(dragOverCardStack)) {
+					dispatch({
+						type: 'deckCompleted',
+						payload: {
+							dragOverIndex: dragOverIndex
+						}
+					});
+
+					if (checkIfIsWinning(eventStore)) {
+						dispatch({
+							type: 'win',
+							payload: null
+						});
+					}
+				}
+			}
+		}
 	}
 
 	// Handle drag start
 	function handleDragStart(event: DragEvent, card: CardType, index: number, stackPosition: number) {
 		isBeingDragged = true;
 
-		draggedCard = card;
-		draggedCard.isBeingDragged = true;
 		let selectedCardStack = eventStore.cards.display[index];
 		draggedCards = selectedCardStack.slice(stackPosition);
 		draggedCards.forEach((dcard) => {
@@ -49,8 +82,8 @@
 
 		// copy original card dimension (height x width)
 		const htmlElem = event.currentTarget as HTMLDivElement;
-		touchCardHeight = htmlElem.clientHeight;
-		touchCardWidth = htmlElem.clientWidth;
+		cardHeight = htmlElem.clientHeight;
+		cardWidth = htmlElem.clientWidth;
 
 		// Set data to identify the card during drag
 		if (event.dataTransfer) {
@@ -72,8 +105,8 @@
 						cards: draggedCards,
 						draggedIndex: draggedIndex,
 						dragPosition,
-						cardHeight: touchCardHeight,
-						cardWidth: touchCardWidth
+						cardHeight: cardHeight,
+						cardWidth: cardWidth
 					}
 				});
 				const dragPreview = document.getElementById(previewId);
@@ -90,106 +123,27 @@
 		}
 	}
 
-	function checkIfIsCompleteSuitStack(currentCardStack: CardType[]) {
-		if (currentCardStack.length === 0 || currentCardStack.length < CARD_VALUES.length) {
-			return false;
-		}
-
-		let isValid = true;
-		let currentCardStackLastIndex = currentCardStack.length - 1;
-		const lastSuit = currentCardStack[currentCardStackLastIndex].suit;
-		for (let i = 0, j = currentCardStackLastIndex; i < CARD_VALUES.length && j >= 0; i++, j--) {
-			if (CARD_VALUES[i] !== currentCardStack[j].value || lastSuit !== currentCardStack[j].suit) {
-				isValid = false;
-				break;
-			}
-		}
-
-		return isValid;
-	}
-
-	function checkIfIsWinning() {
-		const completedCount = eventStore.cards.completed.length - 1; // exclude empty slot for animation used.
-
-		if (eventStore.totalDeck === completedCount) {
-			return true;
-		}
-
-		return false;
-	}
-
 	// Handle drop
 	function handleDrop(event: DragEvent) {
 		event.preventDefault();
 
-		if (draggedCard && draggedIndex !== -1 && draggedStackPosition !== -1) {
-			let newCardStack = eventStore.cards.display[dragOverIndex];
-			let isValidToDrop = false;
-			if (newCardStack.length === 0) {
-				isValidToDrop = true;
-			} else {
-				const newCardStackLastPosition = newCardStack.length - 1;
-				const newLastCard = newCardStack[newCardStackLastPosition];
-
-				if (newLastCard.valueIndex - 1 === draggedCard.valueIndex) {
-					isValidToDrop = true;
-				}
-			}
-
-			if (isValidToDrop) {
-				dispatch({
-					type: 'move',
-					payload: {
-						oldIndex: draggedIndex,
-						draggedStackPosition: draggedStackPosition,
-						newIndex: dragOverIndex
-					}
-				});
-
-				const dragOverCardStack = eventStore.cards.display[dragOverIndex];
-				if (checkIfIsCompleteSuitStack(dragOverCardStack)) {
-					dispatch({
-						type: 'deckCompleted',
-						payload: {
-							dragOverIndex: dragOverIndex
-						}
-					});
-
-					if (checkIfIsWinning()) {
-						dispatch({
-							type: 'win',
-							payload: null
-						});
-					}
-				}
-			}
-		}
+		moveItems();
 	}
 
 	function handleDragOver(event: DragEvent, index: number) {
 		const newCardStack = eventStore.cards.display[index];
-		if (draggedCard && newCardStack.length > 0) {
-			const newCardStackLastPosition = newCardStack.length - 1;
-			const newLastCard = newCardStack[newCardStackLastPosition];
-
-			if (newLastCard.valueIndex - 1 !== draggedCard.valueIndex) {
-				return;
+		let isValidToDrop = checkIsValidDrop(newCardStack, draggedCards);
+		if (isValidToDrop) {
+			event.preventDefault();
+			if (event.dataTransfer) {
+				event.dataTransfer.dropEffect = 'move';
 			}
+			dragOverIndex = index;
 		}
-
-		event.preventDefault();
-		if (event.dataTransfer) {
-			event.dataTransfer.dropEffect = 'move';
-		}
-		dragOverIndex = index;
 	}
 
 	function handleDragEnd() {
 		// Reset drag state
-		if (draggedCard) {
-			draggedCard.isBeingDragged = false;
-		}
-
 		resetStatus();
 	}
 
@@ -207,21 +161,6 @@
 	const handleDocumentMouseUp = (event: MouseEvent) => {
 		// Find the target slot by position
 		if (!isBeingDragged) return;
-
-		// const targetSlotId = findSlotByPosition(e.clientX, e.clientY);
-		// if (targetSlotId && sourceSlotId && draggedItemIds.length > 0) {
-		// 	// Move the items from source to target
-		// 	moveItems(draggedItemIds, targetSlotId);
-		// 	console.log('mouse up to slot');
-		// } else {
-		// 	console.log('mouse up only');
-		// }
-		// // Reset drag state
-		// // isDraggingRef.current = false;
-		// console.log($state.snapshot(draggedItemIds));
-		// isDragging = false;
-		// draggedItemIds = [];
-		// sourceSlotId = null;
 	};
 
 	// Touch event handlers for mobile/touch support
@@ -256,70 +195,8 @@
 		dragPosition.y = touch.clientY;
 
 		// copy original card dimension (height x width)
-		touchCardHeight = (event.currentTarget as HTMLDivElement).clientHeight;
-		touchCardWidth = (event.currentTarget as HTMLDivElement).clientWidth;
-	};
-
-	const handleTouchEnd = (event: TouchEvent) => {
-		if (!isTouchedStarted) return;
-		isTouchedStarted = false;
-
-		// Find which slot is under the touch point at the end
-		const { x, y } = dragPosition;
-		const elements = document.elementsFromPoint(x, y);
-		// Find the first slot element under the touch point
-		const slotElement =
-			elements?.length > 0 ? elements[0].closest(`[id^=${CARD_SLOT_ID_PREFIX}]`) : null;
-
-		if (slotElement) {
-			const dragOverIndex = Number((slotElement as HTMLDivElement).dataset.index);
-
-			if (draggedCards.length > 0 && draggedIndex !== -1 && draggedStackPosition !== -1) {
-				let newCardStack = eventStore.cards.display[dragOverIndex];
-				let isValidToDrop = false;
-				if (newCardStack.length === 0) {
-					isValidToDrop = true;
-				} else {
-					const newCardStackLastPosition = newCardStack.length - 1;
-					const newLastCard = newCardStack[newCardStackLastPosition];
-
-					if (newLastCard.valueIndex - 1 === draggedCards[0].valueIndex) {
-						isValidToDrop = true;
-					}
-				}
-
-				if (isValidToDrop) {
-					dispatch({
-						type: 'move',
-						payload: {
-							oldIndex: draggedIndex,
-							draggedStackPosition: draggedStackPosition,
-							newIndex: dragOverIndex
-						}
-					});
-
-					const dragOverCardStack = eventStore.cards.display[dragOverIndex];
-					if (checkIfIsCompleteSuitStack(dragOverCardStack)) {
-						dispatch({
-							type: 'deckCompleted',
-							payload: {
-								dragOverIndex: dragOverIndex
-							}
-						});
-
-						if (checkIfIsWinning()) {
-							dispatch({
-								type: 'win',
-								payload: null
-							});
-						}
-					}
-				}
-			}
-		}
-
-		// reset status
-		resetStatus();
+		cardHeight = (event.currentTarget as HTMLDivElement).clientHeight;
+		cardWidth = (event.currentTarget as HTMLDivElement).clientWidth;
 	};
 
 	function resetStatus() {
@@ -328,78 +205,80 @@
 		});
 		draggedCards = [];
 
-		touchCardHeight = 0;
-		touchCardWidth = 0;
+		cardHeight = 0;
+		cardWidth = 0;
 
 		draggedIndex = -1;
 		draggedStackPosition = -1;
 
-		draggedCard = null;
 		dragOverIndex = -1;
 		isBeingDragged = false;
 	}
 
-	$effect(() => {
-		const handleTouchMove = (e: TouchEvent) => {
-			if (isTouchedStarted) {
-				e.preventDefault(); // Prevent scrolling while dragging
+	// Find which slot is under the touch point at the end
+	function findTouchSlot(currentDragPosition: Position) {
+		const { x, y } = currentDragPosition;
+		const elements = document.elementsFromPoint(x, y);
+		// Find the first slot element under the touch point
+		const slotElement =
+			elements?.length > 0 ? elements[0].closest(`[id^=${CARD_SLOT_ID_PREFIX}]`) : null;
 
-				const touch = e.touches[0];
+		if (slotElement) {
+			const touchOverIndex = Number((slotElement as HTMLDivElement).dataset.index);
+			return touchOverIndex;
+		}
+		return -1;
+	}
+
+	$effect(() => {
+		const handleTouchMove = (event: TouchEvent) => {
+			if (isTouchedStarted) {
+				event.preventDefault(); // Prevent scrolling while dragging
+
+				const touch = event.touches[0];
 				dragPosition.x = touch.clientX;
 				dragPosition.y = touch.clientY;
+
+				const touchOverIndex = findTouchSlot(dragPosition);
+				if (touchOverIndex !== -1) {
+					const newCardStack = eventStore.cards.display[touchOverIndex];
+
+					let isValidToDrop = checkIsValidDrop(newCardStack, draggedCards);
+					if (isValidToDrop) {
+						dragOverIndex = touchOverIndex;
+					}
+				} else {
+					// reset if move out slot that is not valid for drop
+					dragOverIndex = touchOverIndex;
+				}
 			}
 		};
 
-		// const handleTouchEnd = (e: TouchEvent) => {
-		// 	if (isDragging && touchPosition && draggingItemId && draggingFromSlotId) {
-		// 		// Find which slot we're over
-		// 		const elementsAtPoint = document.elementsFromPoint(touchPosition.x, touchPosition.y);
+		const handleTouchEnd = (event: TouchEvent) => {
+			if (!isTouchedStarted) return;
 
-		// 		let targetSlot: HTMLElement | null = null;
+			event.preventDefault();
+			isTouchedStarted = false;
 
-		// 		// Find a slot element among the elements at the touch point
-		// 		for (const el of elementsAtPoint) {
-		// 			if (el.classList.contains('slot-container')) {
-		// 				targetSlot = el as HTMLElement;
-		// 				break;
-		// 			}
-		// 		}
+			const touchOverIndex = findTouchSlot(dragPosition);
 
-		// 		// If we found a target slot
-		// 		if (targetSlot) {
-		// 			const targetSlotId = targetSlot.dataset.slotId;
-		// 			if (targetSlotId) {
-		// 				moveItem(draggingFromSlotId, targetSlotId, draggingItemId);
-		// 			}
-		// 		}
+			if (touchOverIndex !== -1) {
+				dragOverIndex = touchOverIndex;
+				moveItems();
+			}
 
-		// 		// Reset the dragged element styles
-		// 		if (draggedElement) {
-		// 			draggedElement.style.position = '';
-		// 			draggedElement.style.left = '';
-		// 			draggedElement.style.top = '';
-		// 			draggedElement.style.zIndex = '';
-		// 			draggedElement.style.opacity = '';
-		// 			draggedElement.style.pointerEvents = '';
-		// 		}
-
-		// 		// Clear drag state
-		// 		setIsDragging(false);
-		// 		setDraggedElement(null);
-		// 		setDraggingItemId(null);
-		// 		setDraggingFromSlotId(null);
-		// 		setTouchPosition(null);
-		// 	}
-		// };
+			// reset status
+			resetStatus();
+		};
 
 		// Add event listeners
 		document.addEventListener('touchmove', handleTouchMove, { passive: false });
-		// document.addEventListener('touchend', handleTouchEnd);
+		document.addEventListener('touchend', handleTouchEnd);
 
 		// Clean up
 		return () => {
 			document.removeEventListener('touchmove', handleTouchMove);
-			// document.removeEventListener('touchend', handleTouchEnd);
+			document.removeEventListener('touchend', handleTouchEnd);
 		};
 	});
 
@@ -432,7 +311,7 @@ base:  56      32     11:7  (4)
 					ondragover={(event: DragEvent) => handleDragOver(event, index)}
 					ondrop={handleDrop}
 					ondragleave={handleDragLeave}
-					ontouchend={handleTouchEnd}
+					ondragend={handleDragEnd}
 				>
 					{#each stackedCards as stackedCard, stackPosition (stackedCard.id)}
 						{@const isDragOver =
@@ -460,7 +339,6 @@ base:  56      32     11:7  (4)
 								hideWhenPreview={stackedCard.isBeingDragged}
 								{isDragOver}
 								onDragStart={handleDragStart}
-								onDragEnd={handleDragEnd}
 								onTouchStart={handleTouchStart}
 							/>
 						</div>
@@ -476,8 +354,8 @@ base:  56      32     11:7  (4)
 				cards={draggedCards}
 				{draggedIndex}
 				{dragPosition}
-				cardHeight={touchCardHeight}
-				cardWidth={touchCardWidth}
+				{cardHeight}
+				{cardWidth}
 			/>
 		{/if}
 	</div>
