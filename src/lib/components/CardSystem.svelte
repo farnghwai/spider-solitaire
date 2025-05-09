@@ -230,11 +230,25 @@
 		return -1;
 	}
 
+	const handleTouchEnd = (event: TouchEvent) => {
+		if (!isTouchedStarted) return;
+
+		isTouchedStarted = false;
+
+		const touchOverIndex = findTouchSlot(dragPosition);
+
+		if (touchOverIndex !== -1) {
+			dragOverIndex = touchOverIndex;
+			moveItems();
+		}
+
+		// reset status
+		resetStatus();
+	};
+
 	$effect(() => {
 		const handleTouchMove = (event: TouchEvent) => {
 			if (isTouchedStarted) {
-				event.preventDefault(); // Prevent scrolling while dragging
-
 				const touch = event.touches[0];
 				dragPosition.x = touch.clientX;
 				dragPosition.y = touch.clientY;
@@ -254,31 +268,14 @@
 			}
 		};
 
-		const handleTouchEnd = (event: TouchEvent) => {
-			if (!isTouchedStarted) return;
-
-			event.preventDefault();
-			isTouchedStarted = false;
-
-			const touchOverIndex = findTouchSlot(dragPosition);
-
-			if (touchOverIndex !== -1) {
-				dragOverIndex = touchOverIndex;
-				moveItems();
-			}
-
-			// reset status
-			resetStatus();
-		};
-
 		// Add event listeners
 		document.addEventListener('touchmove', handleTouchMove, { passive: false });
-		document.addEventListener('touchend', handleTouchEnd);
+		// document.addEventListener('touchend', handleTouchEnd);
 
 		// Clean up
 		return () => {
 			document.removeEventListener('touchmove', handleTouchMove);
-			document.removeEventListener('touchend', handleTouchEnd);
+			// document.removeEventListener('touchend', handleTouchEnd);
 		};
 	});
 
@@ -312,6 +309,7 @@ base:  56      32     11:7  (4)
 					ondrop={handleDrop}
 					ondragleave={handleDragLeave}
 					ondragend={handleDragEnd}
+					ontouchend={handleTouchEnd}
 				>
 					{#each stackedCards as stackedCard, stackPosition (stackedCard.id)}
 						{@const isDragOver =
