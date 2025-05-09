@@ -1,7 +1,20 @@
 // types.ts
 
 import type { ClassValue } from 'svelte/elements';
-import type { CardType } from './components/shared.svelte';
+import type { CARD_COLORS, CARD_VALUES } from './constants';
+
+export interface CardType {
+	id: number;
+	value: (typeof CARD_VALUES)[number];
+	suit: CardSuitKeyType;
+	valueIndex: number;
+	isDraggable: boolean;
+	isBeingDragged: boolean;
+}
+
+export type CardColorKeyType = keyof typeof CARD_COLORS;
+export type CardSuitKeyType = 'heart' | 'spade' | 'diamond' | 'club';
+export type CardSuitRecordType = { icon: string; color: CardColorKeyType };
 
 export type CardStatus = { display: CardType[][]; remaining: CardType[]; completed: CardType[][] };
 

@@ -1,7 +1,7 @@
 // eventStore.ts
-import { NO_OF_CARD_SLOT, CARD_VALUES, updateDraggableStatus } from './components/shared.svelte';
-import type { CardType } from './components/shared.svelte';
-import type { GameState, Action, ActionMap, ActionType, CardStatus, HanderType } from './types';
+import { updateDraggableStatus } from './shared.svelte';
+import { NO_OF_CARD_SLOT, CARD_VALUES } from '$lib/constants';
+import type { GameState, Action, CardStatus, HanderType, CardType } from './types';
 
 export const initCardStacks = $state<CardStatus>({
 	display: Array(NO_OF_CARD_SLOT)
@@ -19,6 +19,24 @@ export const eventStore = $state<GameState>({
 	totalDeck: 0,
 	hasWin: false
 });
+
+export const resetInitCardStacksAndEventStore = () => {
+	initCardStacks.display.forEach((card) => {
+		card.length = 0;
+	});
+	initCardStacks.remaining.length = 0;
+	initCardStacks.completed.length = 0;
+	initCardStacks.completed.push([]);
+
+	eventStore.cards.display.length = 0;
+	eventStore.cards.remaining.length = 0;
+	eventStore.cards.completed.length = 0;
+
+	eventStore.history.length = 0;
+	eventStore.future.length = 0;
+	eventStore.totalDeck = 0;
+	eventStore.hasWin = false;
+};
 
 export const populateInitCardStacksTo = (cardStatus: CardStatus) => {
 	initCardStacks.display.forEach((currentCardStack) => {

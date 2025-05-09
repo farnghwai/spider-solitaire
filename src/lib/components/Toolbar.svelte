@@ -1,11 +1,11 @@
 <!-- src/lib/components/Toolbar.svelte -->
-<script>
+<script lang="ts">
 	import SettingsButton from '$lib/components/SettingsButton.svelte';
-	import GameAddButton from '$lib/components/GameAddButton.svelte';
-	import GameRemoveButton from '$lib/components/GameRemoveButton.svelte';
-	import HintButton from '$lib/components/HintButton.svelte';
+	import GameNewButton from '$lib/components/GameNewButton.svelte';
 	import UndoButton from '$lib/components/UndoButton.svelte';
 	import { RESPONSIVE_CLASS } from '$lib/constants';
+
+	let { handleConfirm } = $props();
 </script>
 
 <div
@@ -19,13 +19,7 @@
 	<SettingsButton />
 
 	<!-- Game Button with Red Dot -->
-	<GameAddButton />
-
-	<!-- Game Remove Button -->
-	<GameRemoveButton />
-
-	<!-- Hint Button -->
-	<HintButton />
+	<GameNewButton {handleConfirm} />
 
 	<!-- Undo Button -->
 	<UndoButton />

@@ -8,7 +8,7 @@
 - [ ] PWA App
 - [X] Github Pages
 - [X] Mobile Responsive Design
-- [ ] Touch Screen
+- [X] Touch Screen
 
 ## VS Code Extensions
 1. PrettierPrettier - Code formatter

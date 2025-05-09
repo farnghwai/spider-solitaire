@@ -1,7 +1,8 @@
 <!-- src/lib/components/PokerCard.svelte -->
 <script lang="ts">
-	import { CardSuit, CardColors } from './shared.svelte';
+	import { CardSuit } from '../shared.svelte';
 	import type { PokerCardProps } from '$lib/types';
+	import { CARD_COLORS } from '$lib/constants';
 
 	const {
 		card,
@@ -24,7 +25,7 @@
 		'flex aspect-7/11 h-auto flex-col border border-gray-200 shadow-sm select-none',
 		'rounded-sm @xl:rounded-lg',
 		isDragOver ? 'bg-amber-100' : 'bg-white',
-		CardColors[CardSuit[card.suit].color],
+		CARD_COLORS[CardSuit[card.suit].color],
 		card.isDraggable && 'cursor-grab hover:-translate-y-1 hover:shadow-md',
 		hideWhenPreview && card.isBeingDragged && 'opacity-0',
 		className

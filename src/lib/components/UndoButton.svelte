@@ -8,7 +8,10 @@
 </script>
 
 <button
-	class="flex cursor-pointer items-center justify-center rounded bg-gray-800 px-2 py-1 text-sm hover:bg-gray-700 md:px-4 md:py-2 md:text-base"
+	class={[
+		'flex cursor-pointer items-center justify-center rounded bg-gray-800 px-4 py-2 hover:bg-gray-700',
+		'text-sm @2xl:text-base'
+	]}
 	onclick={handleUndo}
 >
 	<svg
@@ -19,5 +22,5 @@
 	>
 		<path d="M9 14 l-5 -5 l5 -5 M20 20 v-7 a4 4 0 0 0 -4 -4 H4"></path>
 	</svg>
-	Undo
+	Undo / 回退
 </button>

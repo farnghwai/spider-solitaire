@@ -3,11 +3,9 @@
 	import { flip } from 'svelte/animate';
 	import { send, receive } from './transition';
 
-	import { CARD_VALUES } from './shared.svelte';
-	import type { CardType } from './shared.svelte';
-	import type { Position } from '$lib/types';
+	import type { Position, CardType } from '$lib/types';
 	import { eventStore, dispatch } from '$lib/eventStore.svelte';
-	import { RESPONSIVE_CLASS } from '$lib/constants';
+	import { RESPONSIVE_CLASS, CARD_VALUES } from '$lib/constants';
 	import CardPreview from './CardPreview.svelte';
 	import PokerCard from './PokerCard.svelte';
 
