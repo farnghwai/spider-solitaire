@@ -5,9 +5,16 @@
 	import GameRemoveButton from '$lib/components/GameRemoveButton.svelte';
 	import HintButton from '$lib/components/HintButton.svelte';
 	import UndoButton from '$lib/components/UndoButton.svelte';
+	import { RESPONSIVE_CLASS } from '$lib/constants';
 </script>
 
-<div class="flex justify-center gap-1 bg-black/30 p-1 md:gap-4 md:p-2.5">
+<div
+	class={[
+		'flex justify-center bg-black/30',
+		RESPONSIVE_CLASS.GAP_SIZE,
+		RESPONSIVE_CLASS.PADDING_SIZE
+	]}
+>
 	<!-- Settings Button -->
 	<SettingsButton />
 

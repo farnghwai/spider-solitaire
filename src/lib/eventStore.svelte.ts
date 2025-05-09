@@ -87,6 +87,10 @@ const handlers: HanderType = {
 			newCompletdState.push([]);
 		}
 
+		currentCompletedCardDeck.forEach((card) => {
+			card.isBeingDragged = false;
+			card.isDraggable = false;
+		});
 		newCompletdState[completedCardDeckLasIndex].push(...currentCompletedCardDeck);
 		newCompletdState.push([]);
 

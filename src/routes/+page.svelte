@@ -9,9 +9,8 @@
 	} from '$lib/components/shared.svelte';
 	import type { CardType } from '$lib/components/shared.svelte';
 	import { initCardStacks, eventStore, populateInitCardStacksTo } from '$lib/eventStore.svelte';
+	import { RESPONSIVE_CLASS } from '$lib/constants';
 
-	import CheckmarkButton from '$lib/components/CheckmarkButton.svelte';
-	import StarButton from '$lib/components/StarButton.svelte';
 	import CompletedDeck from '$lib/components/CompletedDeck.svelte';
 	import DrawPileButton from '$lib/components/DrawPileButton.svelte';
 	import Toolbar from '$lib/components/Toolbar.svelte';
@@ -114,58 +113,38 @@
 
 	// Timer state
 	let timer = '00:23';
-
-	// Function to handle card click
-	// function handleCardClick(event) {
-	// 	const card = event.currentTarget;
-	// 	card.style.transform = 'translateY(-10px)';
-	// 	setTimeout(() => {
-	// 		card.style.transform = 'translateY(0)';
-	// 	}, 200);
-	// }
-
-	// // Function to handle draw pile click
-	// function handleDrawPileClick(event: MouseEvent) {
-	// 	const remaingCount =
-	// 		remainingCards.length < NO_OF_CARD_SLOT ? remainingCards.length : NO_OF_CARD_SLOT;
-	// 	if (remaingCount > 0) {
-	// 		dispatch({
-	// 			type: 'drawPile',
-	// 			payload: {
-	// 				remaingCount: remaingCount
-	// 			}
-	// 		});
-	// 	}
-	// }
-
-	// function handleCardUpdate(newCards) {
-	// 	displayedCards = newCards;
-	// }
 </script>
 
-<div class="@container flex min-h-screen flex-col bg-green-800 text-white select-none">
-	<div class="relative flex flex-1 flex-col px-1 py-5 @xl:p-5">
-		<!-- Timer -->
-		<!-- <div class="absolute top-2.5 left-2.5 text-sm">{timer}</div> -->
+<div class="@container flex min-h-screen min-w-xs flex-col bg-green-800 text-white">
+	<div class="hidden noscript:block">Please enable JavaScript to use this app.</div>
 
-		<!-- Top Row Cards -->
-		<!-- <div class="mb-5 flex justify-center gap-2">
-			{#each displayedCards as card}
-				<Card {card} on:click={handleCardClick} />
-			{/each}
-		</div> -->
+	<!-- Timer -->
+	<!-- <div class="absolute top-2.5 left-2.5 text-sm">{timer}</div> -->
+	<div
+		class={[
+			'flex flex-1 flex-col @2xl:flex-row',
+			RESPONSIVE_CLASS.GAP_SIZE,
+			'p-0.5 @2xl:p-1 @5xl:p-2 @7xl:p-4'
+		]}
+	>
+		<!-- CardSystem -->
 		<CardSystem />
 
-		<!-- WinCardSuitDeck Pile -->
-		<CompletedDeck />
+		<div
+			class={[
+				'flex justify-between',
+				'm-2 @2xl:m-0',
+				'flex-row @2xl:flex-col',
+				'order-first @2xl:order-last',
+				RESPONSIVE_CLASS.PADDING_SIZE
+			]}
+		>
+			<!-- CompletedDeck Pile -->
+			<CompletedDeck />
 
-		<!-- Draw Pile -->
-		<DrawPileButton />
-		<!-- Checkmark Button -->
-		<!-- <CheckmarkButton /> -->
-
-		<!-- Star Button -->
-		<!-- <StarButton /> -->
+			<!-- Draw Pile -->
+			<DrawPileButton />
+		</div>
 	</div>
 
 	<!-- Toolbar -->

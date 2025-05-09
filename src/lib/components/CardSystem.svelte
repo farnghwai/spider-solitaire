@@ -3,10 +3,11 @@
 	import { flip } from 'svelte/animate';
 	import { send, receive } from './transition';
 
-	import { CardSuit, CARD_VALUES } from './shared.svelte';
+	import { CARD_VALUES } from './shared.svelte';
 	import type { CardType } from './shared.svelte';
 	import type { Position } from '$lib/types';
 	import { eventStore, dispatch } from '$lib/eventStore.svelte';
+	import { RESPONSIVE_CLASS } from '$lib/constants';
 	import CardPreview from './CardPreview.svelte';
 	import PokerCard from './PokerCard.svelte';
 
@@ -49,8 +50,9 @@
 		draggedStackPosition = stackPosition;
 
 		// copy original card dimension (height x width)
-		touchCardHeight = (event.currentTarget as HTMLDivElement).clientHeight;
-		touchCardWidth = (event.currentTarget as HTMLDivElement).clientWidth;
+		const htmlElem = event.currentTarget as HTMLDivElement;
+		touchCardHeight = htmlElem.clientHeight;
+		touchCardWidth = htmlElem.clientWidth;
 
 		// Set data to identify the card during drag
 		if (event.dataTransfer) {
@@ -330,6 +332,7 @@
 
 		touchCardHeight = 0;
 		touchCardWidth = 0;
+
 		draggedIndex = -1;
 		draggedStackPosition = -1;
 
@@ -401,70 +404,83 @@
 			// document.removeEventListener('touchend', handleTouchEnd);
 		};
 	});
+
+	/*
+      h    x  w
+ 7xl: 176     112     11:7 (16)
+ 5xl: 132      84     11:7 (12)
+ 3xl: 110      70     11:7 (10)
+  xl:  88      56     11:7  (8)
+base:  56      32     11:7  (4)
+*/
 </script>
 
-<svelte:document onmousemove={handleDocumentMouseMove} onmouseup={handleDocumentMouseUp} />
-
-<div class="mb-5 flex justify-center gap-0.5 @xl:gap-2">
-	{#each eventStore.cards.display as stackedCards, index}
-		<div
-			class={[
-				'relative border-dashed border-gray-300 ',
-				dragOverIndex === index ? 'border-blue-400' : '',
-				'h-16 w-10 @xl:h-22 @xl:w-14 @5xl:h-44 @5xl:w-28',
-				'rounded-lg @5xl:rounded-xl',
-				'border-1 @xl:border-2'
-			]}
-			id="{CARD_SLOT_ID_PREFIX}{index}"
-			data-index={index}
-			role="listitem"
-			ondragover={(event: DragEvent) => handleDragOver(event, index)}
-			ondrop={handleDrop}
-			ondragleave={handleDragLeave}
-			ontouchend={handleTouchEnd}
-		>
-			{#each stackedCards as stackedCard, stackPosition (stackedCard.id)}
-				{@const isDragOver = dragOverIndex === index && stackedCards.length - 1 === stackPosition}
-
+<!-- <svelte:document onmousemove={handleDocumentMouseMove} onmouseup={handleDocumentMouseUp} /> -->
+<div class="flex flex-1 flex-col">
+	<div class={['flex flex-1 justify-center', RESPONSIVE_CLASS.GAP_SIZE]}>
+		{#each eventStore.cards.display as stackedCards, index}
+			<div class={[RESPONSIVE_CLASS.CARD_SIZE]}>
 				<div
 					class={[
-						'absolute',
-						'top-[calc(var(--spacing)*var(--stackOffset)*5)]',
-						'@xl:top-[calc(var(--spacing)*var(--stackOffset)*7)]',
-						'@5xl:top-[calc(var(--spacing)*var(--stackOffset)*9)]',
-						'h-full w-full',
-						'p-0.5 @xl:p-1 @5xl:p-2'
+						'relative border-dashed border-gray-300',
+						dragOverIndex === index ? 'border-blue-400' : '',
+						'aspect-7/11 h-auto w-full',
+						'rounded-sm @xl:rounded-lg @5xl:rounded-xl',
+						'border-1 @5xl:border-2'
 					]}
-					style="--stackOffset: {stackPosition};"
-					animate:flip={{ duration: 300 }}
-					in:receive={{ key: stackedCard.id }}
-					out:send={{ key: stackedCard.id }}
-					id="card-c-{index}-s-{stackPosition}"
+					id="{CARD_SLOT_ID_PREFIX}{index}"
+					data-index={index}
+					role="listitem"
+					ondragover={(event: DragEvent) => handleDragOver(event, index)}
+					ondrop={handleDrop}
+					ondragleave={handleDragLeave}
+					ontouchend={handleTouchEnd}
 				>
-					<PokerCard
-						{index}
-						{stackPosition}
-						card={stackedCard}
-						hideWhenPreview={stackedCard.isBeingDragged}
-						{isDragOver}
-						onDragStart={handleDragStart}
-						onDragEnd={handleDragEnd}
-						onTouchStart={handleTouchStart}
-					/>
+					{#each stackedCards as stackedCard, stackPosition (stackedCard.id)}
+						{@const isDragOver =
+							dragOverIndex === index && stackedCards.length - 1 === stackPosition}
+						<div
+							class={[
+								'absolute',
+								'aspect-7/11 h-auto w-full scale-95 @xl:scale-90',
+								'top-[calc(var(--spacing)*var(--stackOffset)*5)]',
+								'@xl:top-[calc(var(--spacing)*var(--stackOffset)*7.5)]',
+								'@3xl:top-[calc(var(--spacing)*var(--stackOffset)*8)]',
+								'@5xl:top-[calc(var(--spacing)*var(--stackOffset)*8.5)]',
+								'@7xl:top-[calc(var(--spacing)*var(--stackOffset)*9)]'
+							]}
+							style="--stackOffset: {stackPosition};"
+							animate:flip={{ duration: 300 }}
+							in:receive={{ key: stackedCard.id }}
+							out:send={{ key: stackedCard.id }}
+							id="card-c-{index}-s-{stackPosition}"
+						>
+							<PokerCard
+								{index}
+								{stackPosition}
+								card={stackedCard}
+								hideWhenPreview={stackedCard.isBeingDragged}
+								{isDragOver}
+								onDragStart={handleDragStart}
+								onDragEnd={handleDragEnd}
+								onTouchStart={handleTouchStart}
+							/>
+						</div>
+					{/each}
 				</div>
-			{/each}
-		</div>
-	{/each}
-</div>
-<div bind:this={cardSystemElem} class={{ 'opacity-0': !isTouchedStarted }}>
-	{#if isTouchedStarted}
-		<CardPreview
-			id={generatePreviewId()}
-			cards={draggedCards}
-			{draggedIndex}
-			{dragPosition}
-			cardHeight={touchCardHeight}
-			cardWidth={touchCardWidth}
-		/>
-	{/if}
+			</div>
+		{/each}
+	</div>
+	<div bind:this={cardSystemElem} class={{ 'opacity-0': !isTouchedStarted }}>
+		{#if isTouchedStarted}
+			<CardPreview
+				id={generatePreviewId()}
+				cards={draggedCards}
+				{draggedIndex}
+				{dragPosition}
+				cardHeight={touchCardHeight}
+				cardWidth={touchCardWidth}
+			/>
+		{/if}
+	</div>
 </div>

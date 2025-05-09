@@ -4,8 +4,8 @@
 	import { flip } from 'svelte/animate';
 	import { receive, send } from './transition';
 
-	import { CardSuit, CardColors } from './shared.svelte';
 	import { eventStore } from '$lib/eventStore.svelte';
+	import { RESPONSIVE_CLASS } from '$lib/constants';
 	import PokerCard from './PokerCard.svelte';
 
 	$effect.pre(() => {
@@ -16,26 +16,28 @@
 	});
 </script>
 
-<div class="absolute top-16 left-5 grid grid-cols-1 gap-1">
-	{#each eventStore.cards.completed as stackedCards, index}
-		<div class="grid grid-cols-subgrid grid-rows-subgrid">
-			{#each stackedCards as stackedCard, stackPosition (stackedCard.id)}
-				<div
-					animate:flip={{ duration: 300 }}
-					in:receive={{ key: stackedCard.id }}
-					out:send={{ key: stackedCard.id }}
-					class={['h-14 w-8 @xl:h-18 @xl:w-10 @5xl:h-36 @5xl:w-20']}
-					style="z-index: {100 - stackPosition};"
-				>
-					<PokerCard
-						card={stackedCard}
-						{index}
-						{stackPosition}
-						hideWhenPreview={false}
-						isDragOver={false}
-					/>
-				</div>
-			{/each}
-		</div>
-	{/each}
+<div class="flex flex-1 items-center @2xl:flex-col">
+	<div class={['grid grid-flow-col @2xl:grid-flow-row', RESPONSIVE_CLASS.GAP_SIZE]}>
+		{#each eventStore.cards.completed as stackedCards, index}
+			<div class={['grid grid-rows-subgrid']}>
+				{#each stackedCards as stackedCard, stackPosition (stackedCard.id)}
+					<div
+						animate:flip={{ duration: 300 }}
+						in:receive={{ key: stackedCard.id }}
+						out:send={{ key: stackedCard.id }}
+						class={[RESPONSIVE_CLASS.COMPLETED_CARD_SIZE]}
+						style="z-index: {100 - stackPosition};"
+					>
+						<PokerCard
+							card={stackedCard}
+							{index}
+							{stackPosition}
+							hideWhenPreview={false}
+							isDragOver={false}
+						/>
+					</div>
+				{/each}
+			</div>
+		{/each}
+	</div>
 </div>
