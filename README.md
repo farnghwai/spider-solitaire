@@ -1,5 +1,5 @@
 # Spider Solitaire
-[![Deploy to GitHub Pages](https://github.com/farnghwai/spider-solitaire/actions/workflows/deploy.yml/badge.svg?branch=main)](https://github.com/farnghwai/spider-solitaire/actions/workflows/deploy.yml)
+[![Deploy to GitHub Pages](https://github.com/farnghwai/spider-solitaire/actions/workflows/deploy.yml/badge.svg)](https://github.com/farnghwai/spider-solitaire/actions/workflows/deploy.yml)
 
 ## Features
 - [x] Completed Card deck
