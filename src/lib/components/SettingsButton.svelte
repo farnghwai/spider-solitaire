@@ -1,8 +1,9 @@
 <!-- src/lib/components/SettingsButton.svelte -->
 <script lang="ts">
-	const GITHUB_REPO = 'https://github.com/';
+	import { version as APP_VERSION } from '$app/environment';
+	import { PUBLIC_GITHUB_REPO_URL as GITHUB_REPO } from '$env/static/public';
+
 	let showSettings = $state(false);
-	const APP_VERSION = '1';
 
 	let { showUndoButton = $bindable() } = $props();
 
