@@ -7,7 +7,6 @@
 
 	let { handleConfirm } = $props();
 	let showUndoButton = $state(true);
-	console.log($inspect(showUndoButton));
 </script>
 
 <div
