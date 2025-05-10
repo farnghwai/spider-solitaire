@@ -19,7 +19,7 @@
 	<div class="fixed inset-0 z-[200] flex items-center justify-center bg-black/50">
 		<!-- Trophy and winning text -->
 		<div class={['flex flex-col items-center']}>
-			<div class="mb-4 text-8xl text-yellow-400 md:mb-6">🏆</div>
+			<div class="mb-4 text-6xl text-yellow-400 md:mb-6 md:text-8xl">🏆</div>
 			<div
 				class={[
 					'mb-2 text-center text-2xl font-bold tracking-wide text-white md:mb-4 md:text-5xl',
@@ -27,6 +27,9 @@
 				]}
 			>
 				YOU WIN!
+			</div>
+			<div class="mb-2 text-center text-lg font-medium text-white md:mb-4 md:text-3xl">
+				Congratulations!
 			</div>
 			<div
 				class="rounded-full bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 px-3 py-1.5 text-base font-bold text-white shadow-lg md:px-6 md:py-3 md:text-xl"
