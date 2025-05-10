@@ -49,7 +49,7 @@
 		class={[
 			'flex justify-between',
 			'px-0 @xl:px-1 @3xl:px-1.5 @5xl:px-2',
-			'text-xs @xl:text-sm @3xl:text-base @5xl:text-lg @7xl:text-xl'
+			'text-sm @xl:text-base @3xl:text-lg @5xl:text-xl @7xl:text-2xl'
 		]}
 	>
 		<div class="font-bold">{card.value}</div>

@@ -35,8 +35,10 @@
 	});
 </script>
 
-<div class="@container flex min-h-screen min-w-xs flex-col bg-green-800">
-	<div class="hidden noscript:block">Please enable JavaScript to use this app.</div>
+<div class="@container flex min-h-dvh min-w-xs flex-col overflow-y-hidden">
+	<div class="hidden items-center justify-center text-white noscript:flex noscript:flex-1">
+		Please enable JavaScript to use this app.
+	</div>
 
 	{#if !isLoading}
 		<div
