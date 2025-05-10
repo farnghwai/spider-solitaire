@@ -249,6 +249,8 @@
 	$effect(() => {
 		const handleTouchMove = (event: TouchEvent) => {
 			if (isTouchedStarted) {
+				event.preventDefault();
+
 				const touch = event.touches[0];
 				dragPosition.x = touch.clientX;
 				dragPosition.y = touch.clientY;

@@ -16,7 +16,6 @@
 
 	function handleShowUndoButton() {
 		showUndoButton = !showUndoButton;
-		console.log('handle', $state.snapshot(showUndoButton));
 	}
 </script>
 
