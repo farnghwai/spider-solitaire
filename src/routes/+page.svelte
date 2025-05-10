@@ -1,2 +1,73 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to read the documentation</p>
+<script lang="ts">
+	import { onMount, tick } from 'svelte';
+	import { initNewGameSession } from '$lib/shared.svelte';
+	import { initCardStacks } from '$lib/eventStore.svelte';
+	import { RESPONSIVE_CLASS } from '$lib/constants';
+
+	import CardSystem from '$lib/components/CardSystem.svelte';
+	import CompletedDeck from '$lib/components/CompletedDeck.svelte';
+	import DrawPileButton from '$lib/components/DrawPileButton.svelte';
+	import Toolbar from '$lib/components/Toolbar.svelte';
+	import WinningOverlay from '$lib/components/WinningOverlay.svelte';
+
+	let isLoading = $state(false);
+
+	function initCards() {
+		// no action if cardStacks already have card
+		if (!initCardStacks.display.every((cardSlot) => cardSlot.length === 0)) {
+			return;
+		}
+
+		initNewGameSession();
+	}
+
+	function handleConfirm() {
+		isLoading = true;
+		initNewGameSession();
+
+		return tick().then(() => {
+			isLoading = false;
+		});
+	}
+
+	onMount(() => {
+		initCards();
+	});
+</script>
+
+<div class="@container flex min-h-screen min-w-xs flex-col bg-green-800">
+	<div class="hidden noscript:block">Please enable JavaScript to use this app.</div>
+
+	{#if !isLoading}
+		<div
+			class={[
+				'flex flex-1 flex-col @2xl:flex-row',
+				RESPONSIVE_CLASS.GAP_SIZE,
+				'p-0.5 @2xl:p-1 @5xl:p-2 @7xl:p-4'
+			]}
+		>
+			<!-- CardSystem -->
+			<CardSystem />
+
+			<div
+				class={[
+					'flex justify-between',
+					'm-2 @2xl:m-0',
+					'flex-row @2xl:flex-col',
+					'order-first @2xl:order-last',
+					RESPONSIVE_CLASS.PADDING_SIZE
+				]}
+			>
+				<!-- CompletedDeck Pile -->
+				<CompletedDeck />
+
+				<!-- Draw Pile -->
+				<DrawPileButton />
+			</div>
+		</div>
+	{/if}
+	<!-- Toolbar -->
+	<Toolbar {handleConfirm} />
+
+	<WinningOverlay />
+</div>
