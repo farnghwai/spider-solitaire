@@ -11,6 +11,7 @@
 	import WinningOverlay from '$lib/components/WinningOverlay.svelte';
 
 	let isLoading = $state(false);
+	let cardSystemWidth = $state(0);
 
 	function initCards() {
 		// no action if cardStacks already have card
@@ -44,28 +45,29 @@
 		<div
 			class={[
 				'flex flex-1 flex-col @2xl:flex-row',
-				RESPONSIVE_CLASS.GAP_SIZE,
-				'p-0.5 @2xl:p-1 @5xl:p-2 @7xl:p-4'
+				'p-0.5 @2xl:p-1 @5xl:p-2 @7xl:p-4',
+				'mx-auto w-full gap-4 @5xl:gap-12 @7xl:gap-16'
 			]}
 		>
 			<!-- CardSystem -->
-			<CardSystem />
+			<CardSystem bind:cardSystemWidth />
 
 			<div
 				class={[
-					'flex justify-between',
-					'm-2 @2xl:m-0',
+					'flex items-center justify-between',
 					'flex-row @2xl:flex-col',
 					'order-first @2xl:order-last',
-					RESPONSIVE_CLASS.PADDING_SIZE,
-					RESPONSIVE_CLASS.DRAW_PILE_CARD_COL_SIZE
+					// RESPONSIVE_CLASS.PADDING_SIZE,
+					//RESPONSIVE_CLASS.DRAW_PILE_CARD_COL_SIZE
+					//'w-full @2xl:w-32'
+					'p-1'
 				]}
 			>
 				<!-- CompletedDeck Pile -->
-				<CompletedDeck />
+				<CompletedDeck {cardSystemWidth} />
 
 				<!-- Draw Pile -->
-				<DrawPileButton />
+				<DrawPileButton {cardSystemWidth} />
 			</div>
 		</div>
 	{/if}

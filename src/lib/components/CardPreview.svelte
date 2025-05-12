@@ -4,8 +4,16 @@
 
 	import PokerCard from './PokerCard.svelte';
 
-	const { id, cards, draggedIndex, dragPosition, cardHeight, cardWidth }: CardPreviewProps =
-		$props();
+	const {
+		id,
+		cards,
+		draggedIndex,
+		dragPosition,
+		containerWidth,
+		cardOffsetHeight,
+		cardHeight,
+		cardWidth
+	}: CardPreviewProps = $props();
 </script>
 
 <div
@@ -13,19 +21,11 @@
 	class="pointer-events-none fixed z-[9999] flex -translate-x-1/2 -translate-y-4 items-center"
 	style={`left: ${dragPosition.x}px; top: ${dragPosition.y}px`}
 >
-	<div class="relative flex flex-col">
+	<div class="relative flex aspect-7/11 flex-col">
 		{#each cards as card, stackPosition (card.id)}
 			<div
-				class={[
-					'aspect-7/11 h-auto w-full scale-90',
-					'-translate-y-[calc(var(--spacing)*var(--stackOffset)*6.2)]',
-					'@sm:-translate-y-[calc(var(--spacing)*var(--stackOffset)*8.8)]',
-					'@xl:-translate-y-[calc(var(--spacing)*var(--stackOffset)*13.2)]',
-					'@3xl:-translate-y-[calc(var(--spacing)*var(--stackOffset)*15.5)]',
-					'@5xl:-translate-y-[calc(var(--spacing)*var(--stackOffset)*22.5)]',
-					'@7xl:-translate-y-[calc(var(--spacing)*var(--stackOffset)*39.1)]'
-				]}
-				style={`z-index: 100 - ${stackPosition}; --stackOffset: ${stackPosition};`}
+				class={['absolute', 'w-full scale-90', 'top-(--stackOffset)']}
+				style={`z-index: 100 - ${stackPosition}; --stackOffset: ${stackPosition * cardOffsetHeight}px;`}
 				style:height={`${cardHeight}px`}
 				style:width={`${cardWidth}px`}
 			>
@@ -33,6 +33,7 @@
 					{card}
 					index={draggedIndex}
 					{stackPosition}
+					{containerWidth}
 					hideWhenPreview={false}
 					isDragOver={false}
 				/>

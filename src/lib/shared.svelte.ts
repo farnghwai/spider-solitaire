@@ -176,3 +176,20 @@ export function initNewGameSession() {
 	populateInitCardStacksTo(eventStore.cards);
 	eventStore.totalDeck = totalDecks;
 }
+
+// Calculate current font size based on container width
+export const calculateFontSize = (width: number) => {
+	// Base font size is 10px at 300px width
+	// Max font size is 16px at 1000px width or larger
+	const minWidth = 320; // min-w-xs, min width size
+	const maxWidth = 1024; // max-w-lg, max width size
+	const minFontSize = 12;
+	const maxFontSize = 24;
+
+	if (width <= minWidth) return minFontSize;
+	if (width >= maxWidth) return maxFontSize;
+
+	// Linear scaling between min and max
+	const scale = (width - minWidth) / (maxWidth - minWidth);
+	return minFontSize + scale * (maxFontSize - minFontSize);
+};

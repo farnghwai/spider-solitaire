@@ -3,9 +3,15 @@
 	import { flip } from 'svelte/animate';
 	import { send, receive } from './transition';
 	import { eventStore, dispatch } from '$lib/eventStore.svelte';
-	import { RESPONSIVE_CLASS, NO_OF_CARD_SLOT } from '$lib/constants';
+	import { NO_OF_CARD_SLOT } from '$lib/constants';
 
 	import PokerCard from './PokerCard.svelte';
+
+	const { cardSystemWidth } = $props();
+
+	let cardWidth = $derived.by(() => {
+		return (cardSystemWidth / NO_OF_CARD_SLOT) * 0.8; // simplified card width calculation by using some assumpation
+	});
 
 	// let { onClick }: DrawPileProps = $props();
 	function handleDrawPileClick(event: MouseEvent) {
@@ -24,12 +30,12 @@
 	}
 </script>
 
-<div>
+<div class="w-(--card-width)" style={`--card-width: ${cardWidth}px;`}>
 	{#if eventStore.cards.remaining.length > 0}
 		<button
 			aria-label="Draw Pile"
 			class={[
-				'flex aspect-7/11 w-full cursor-pointer items-center justify-center bg-white shadow-md',
+				'flex aspect-7/11 w-full min-w-6 cursor-pointer items-center justify-center bg-white shadow-md',
 				'rounded-sm @xl:rounded-md',
 				'hover:scale-105',
 				'p-0.5 @3xl:p-1'
@@ -67,6 +73,7 @@
 				card={stackedCard}
 				index={0}
 				{stackPosition}
+				containerWidth={0}
 				hideWhenPreview={false}
 				isDragOver={false}
 			/>
