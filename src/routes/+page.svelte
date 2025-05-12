@@ -72,5 +72,5 @@
 	<!-- Toolbar -->
 	<Toolbar {handleConfirm} />
 
-	<WinningOverlay />
+	<WinningOverlay {handleConfirm} />
 </div>

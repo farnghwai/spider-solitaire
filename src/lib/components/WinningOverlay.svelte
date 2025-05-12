@@ -1,17 +1,28 @@
 <script lang="ts">
 	import { eventStore } from '$lib/eventStore.svelte';
+	let { handleConfirm } = $props();
 
 	let showWinAnimation = $derived(eventStore.hasWin);
 
+	// Event handlers
+	function handleConfirmNewGame() {
+		handleConfirm();
+	}
+
 	$effect(() => {
 		// Hide winning animation after 3 seconds
+		let timerId: number;
 		if (showWinAnimation) {
-			setTimeout(() => {
+			timerId = setTimeout(() => {
 				showWinAnimation = false;
-			}, 4000);
+			}, 3000);
 		}
 
-		return () => {};
+		return () => {
+			if (timerId) {
+				clearTimeout(timerId);
+			}
+		};
 	});
 </script>
 
@@ -32,12 +43,26 @@
 				Congratulations!
 			</div>
 			<div
-				class="rounded-full bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 px-3 py-1.5 text-base font-bold text-white shadow-lg md:px-6 md:py-3 md:text-xl"
+				class="rounded-full bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 bg-clip-text px-3 py-1.5 text-base font-extrabold text-transparent shadow-lg md:px-6 md:py-3 md:text-3xl"
 			>
 				Challenge Complete!
 			</div>
 			<div class="px-3 py-2 text-base font-bold text-white shadow-lg md:px-6 md:py-4 md:text-xl">
-				Refresh the screen to start new game.
+				<button
+					type="button"
+					class="inline-flex w-full cursor-pointer justify-center rounded-md bg-green-700 px-3 py-2 text-base font-semibold text-white shadow-xs hover:bg-green-600 sm:ml-3 sm:w-auto"
+					onclick={handleConfirmNewGame}
+				>
+					<svg
+						class="mr-1 h-2.5 w-2.5 stroke-current md:mr-1.5 md:h-5 md:w-5"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke-width="2"
+					>
+						<rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+						<path d="M3 3 h18 v18 h-18 v-18 M8 12 h8 M12 8 v8"></path>
+					</svg> Start New Game / 開始新遊戲</button
+				>
 			</div>
 		</div>
 
