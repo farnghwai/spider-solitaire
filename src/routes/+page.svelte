@@ -57,7 +57,8 @@
 					'm-2 @2xl:m-0',
 					'flex-row @2xl:flex-col',
 					'order-first @2xl:order-last',
-					RESPONSIVE_CLASS.PADDING_SIZE
+					RESPONSIVE_CLASS.PADDING_SIZE,
+					RESPONSIVE_CLASS.DRAW_PILE_CARD_COL_SIZE
 				]}
 			>
 				<!-- CompletedDeck Pile -->
