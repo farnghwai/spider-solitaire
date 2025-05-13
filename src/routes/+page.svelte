@@ -34,7 +34,23 @@
 	onMount(() => {
 		initCards();
 	});
+	const title = 'Spider Solitaire';
 </script>
+
+<svelte:head>
+	<title>{`${title} - A Simple & Classic Card Game`}</title>
+	<meta
+		name="description"
+		content="Experience the classic Spider Solitaire card game with a simple design. Play for free online as a demo application—perfect for casual gamers seeking a relaxing, single-player mind challenge."
+	/>
+	<meta
+		name="keywords"
+		content="free spider solitaire, online card game, simple solitaire demo, relaxing game, single-player challenge, demo application, browser-based solitaire, classic card game"
+	/>
+	<meta name="mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-title" content={title} />
+</svelte:head>
 
 <div class="@container flex min-h-dvh min-w-xs flex-col overflow-y-hidden">
 	<div class="hidden items-center justify-center text-white noscript:flex noscript:flex-1">
@@ -44,8 +60,8 @@
 	{#if !isLoading}
 		<div
 			class={[
-				'flex flex-1 flex-col @2xl:flex-row',
-				'p-0.5 @2xl:p-1 @5xl:p-2 @7xl:p-4',
+				'flex flex-1 flex-col @3xl:flex-row',
+				'p-0.5 @3xl:p-2 @7xl:p-4',
 				'mx-auto w-full gap-4 @5xl:gap-12 @7xl:gap-16'
 			]}
 		>
@@ -55,11 +71,10 @@
 			<div
 				class={[
 					'flex items-center justify-between',
-					'flex-row @2xl:flex-col',
-					'order-first @2xl:order-last',
+					'flex-row @3xl:flex-col',
+					'order-first @3xl:order-last',
 					// RESPONSIVE_CLASS.PADDING_SIZE,
 					//RESPONSIVE_CLASS.DRAW_PILE_CARD_COL_SIZE
-					//'w-full @2xl:w-32'
 					'p-1'
 				]}
 			>
