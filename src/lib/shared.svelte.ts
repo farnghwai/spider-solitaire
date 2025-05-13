@@ -182,9 +182,9 @@ export const calculateFontSize = (width: number) => {
 	// Base font size is 10px at 300px width
 	// Max font size is 16px at 1000px width or larger
 	const minWidth = 320; // min-w-xs, min width size
-	const maxWidth = 1024; // max-w-lg, max width size
-	const minFontSize = 12;
-	const maxFontSize = 24;
+	const maxWidth = 1280; // max-w-7xl, max width size
+	const minFontSize = 10;
+	const maxFontSize = 36;
 
 	if (width <= minWidth) return minFontSize;
 	if (width >= maxWidth) return maxFontSize;

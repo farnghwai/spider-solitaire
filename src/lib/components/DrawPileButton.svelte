@@ -30,7 +30,7 @@
 	}
 </script>
 
-<div class="w-(--card-width)" style={`--card-width: ${cardWidth}px;`}>
+<div class="w-(--card-width) transition-all" style={`--card-width: ${cardWidth}px;`}>
 	{#if eventStore.cards.remaining.length > 0}
 		<button
 			aria-label="Draw Pile"
@@ -47,7 +47,7 @@
 					'flex h-full w-full flex-col items-center justify-center',
 					'bg-gradient-to-br from-red-500 to-red-700',
 					'rounded-xs @xl:rounded-md',
-					'px-0 pt-4 pb-2'
+					'px-0 pt-2 pb-1 @3xl:pt-4 @3xl:pb-2'
 				]}
 			>
 				<svg viewBox="10 15 80 70" xmlns="http://www.w3.org/2000/svg">
@@ -56,7 +56,7 @@
 						fill="black"
 					/>
 				</svg>
-				<span class={['text-xs @xl:text-sm @5xl:text-base', 'text-white']}
+				<span class={['text-xs transition-all @3xl:text-sm @5xl:text-base', 'text-white']}
 					>{eventStore.cards.remaining.length}</span
 				>
 			</div>

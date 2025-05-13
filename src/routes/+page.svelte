@@ -62,7 +62,7 @@
 			class={[
 				'flex flex-1 flex-col @3xl:flex-row',
 				'p-0.5 @3xl:p-2 @7xl:p-4',
-				'mx-auto w-full gap-4 @5xl:gap-12 @7xl:gap-16'
+				'mx-auto w-full max-w-7xl gap-4 @5xl:gap-12 @7xl:gap-16'
 			]}
 		>
 			<!-- CardSystem -->

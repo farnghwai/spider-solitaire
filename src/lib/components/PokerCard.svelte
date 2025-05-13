@@ -44,7 +44,7 @@
 	></div>
 
 	<div
-		class={['flex justify-between px-1', 'text-(length:--sp-text-size)']}
+		class={['flex justify-between px-0.5 @3xl:px-1', 'text-(length:--sp-text-size)']}
 		style={`--sp-text-size: ${fontSize}px`}
 	>
 		<div class="font-bold">{card.value}</div>
@@ -52,7 +52,7 @@
 	</div>
 	<div
 		class={['flex flex-1 items-center justify-center', 'text-(length:--sp-text-size)']}
-		style={`--sp-text-size: ${fontSize * 3}px`}
+		style={`--sp-text-size: ${fontSize * 2.5}px`}
 	>
 		{suitSymbol}
 	</div>
