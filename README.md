@@ -9,9 +9,13 @@
 - [X] Github Pages
 - [X] Mobile Responsive Design
 - [X] Touch Screen
-- [ ] Progressive Web App (PWA)
+- [x] Progressive Web App (PWA)
 - [ ] Card Pattern
 - [ ] Flip card
+
+## Known Issues
+1. Rendering not work well in Safari browser.
+2. Trigger Android Protect Scanning when try install as PWA.
 
 ## Technology Stacks
 - Hosting
