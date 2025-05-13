@@ -9,9 +9,13 @@
 - [X] Github Pages
 - [X] Mobile Responsive Design
 - [X] Touch Screen
-- [ ] Progressive Web App (PWA)
+- [x] Progressive Web App (PWA)
 - [ ] Card Pattern
 - [ ] Flip card
+
+## Known Issues
+1. Rendering not work well in Safari browser.
+2. Trigger Android Protect Scanning when try install as PWA.
 
 ## Technology Stacks
 - Hosting
@@ -54,13 +58,22 @@
   - [Svelte 5](https://svelte.dev/docs/svelte/overview)
   - [SvelteKit 2](https://svelte.dev/docs/kit/introduction)
   - [Tailwind CSS 4.1](https://tailwindcss.com/docs/installation/using-vite)
+  - [Mozilla Web docs - JavaScript (JS)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
+  - [Mozilla Web docs - CSS: Cascading Style Sheets (CSS)](https://developer.mozilla.org/en-US/docs/Web/CSS)
 - Generative AI Models
-  - [Claude 3.7 Sonnet](https://claude.ai/):
-    - Overall draft
-    - Drag and drop with Touch support
-    - Settings
-    - Winning Animation
-  - [ChatGPT GPT-4o](https://chatgpt.com/):
-    - Undo
+  - Cloud
+    - [Claude 3.7 Sonnet](https://claude.ai/):
+      - Overall draft
+      - Drag and drop with Touch support
+      - Settings
+      - Winning Animation
+    - [ChatGPT GPT-4o](https://chatgpt.com/):
+      - Undo
+  - Local
+    - Gemma3 12B
+    - Qwen3 8B
+    - Qwen 2.5 Code 7B
+    - Qwen 2.5 Code 1.5B
 - Others
   - Transitions effect - [transitions.ts](https://svelte.dev/tutorial/svelte/animations)
+  - Mobile Screen Height handling - [100vh height when address bar is shown - Chrome Mobile] https://stackoverflow.com/questions/52848856/100vh-height-when-address-bar-is-shown-chrome-mobile

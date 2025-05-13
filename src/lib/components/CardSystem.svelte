@@ -3,13 +3,16 @@
 	import { flip } from 'svelte/animate';
 	import { send, receive } from './transition';
 
-	import type { Position, CardType } from '$lib/types';
+	import type { Position, CardType, CardSystemProps } from '$lib/types';
 	import { eventStore, dispatch } from '$lib/eventStore.svelte';
-	import { RESPONSIVE_CLASS } from '$lib/constants';
+	import { RESPONSIVE_CLASS, NO_OF_CARD_SLOT } from '$lib/constants';
 	import { checkIfIsCompleteSuitStack, checkIfIsWinning, checkIsValidDrop } from '$lib/gameRules';
+	import { calculateFontSize } from '../shared.svelte';
 
 	import CardPreview from './CardPreview.svelte';
 	import PokerCard from './PokerCard.svelte';
+
+	let { cardSystemWidth = $bindable() }: CardSystemProps = $props();
 
 	// Modern Svelte 5 props
 	let draggedCards = $state<CardType[]>([]);
@@ -28,6 +31,14 @@
 	let isTouchedStarted = $state(false);
 	let cardHeight = $state(0);
 	let cardWidth = $state(0);
+
+	const cardOffsetHeight = $derived.by(() => {
+		const fontSize = calculateFontSize(cardSystemWidth);
+		const lineHeight = fontSize * 1.5;
+		const offsetHeight = 6 + lineHeight;
+		const scale = 0.9; // card size is 90% of slot size
+		return offsetHeight * scale;
+	});
 
 	function generatePreviewId() {
 		return `${CARD_PREVIEW_ID_PREFIX}${Date.now()}`;
@@ -105,6 +116,8 @@
 						cards: draggedCards,
 						draggedIndex: draggedIndex,
 						dragPosition,
+						containerWidth: cardSystemWidth,
+						cardOffsetHeight: cardOffsetHeight,
 						cardHeight: cardHeight,
 						cardWidth: cardWidth
 					}
@@ -249,6 +262,8 @@
 	$effect(() => {
 		const handleTouchMove = (event: TouchEvent) => {
 			if (isTouchedStarted) {
+				event.preventDefault();
+
 				const touch = event.touches[0];
 				dragPosition.x = touch.clientX;
 				dragPosition.y = touch.clientY;
@@ -291,14 +306,17 @@ base:  56      32     11:7  (4)
 
 <!-- <svelte:document onmousemove={handleDocumentMouseMove} onmouseup={handleDocumentMouseUp} /> -->
 <div class="flex flex-1 flex-col">
-	<div class={['flex flex-1 justify-center', RESPONSIVE_CLASS.GAP_SIZE]}>
+	<div
+		bind:offsetWidth={cardSystemWidth}
+		class={['flex flex-1 justify-center', RESPONSIVE_CLASS.GAP_SIZE]}
+	>
 		{#each eventStore.cards.display as stackedCards, index}
-			<div class={[RESPONSIVE_CLASS.CARD_SIZE]}>
+			<div class="min-w-6 flex-1">
 				<div
 					class={[
 						'relative border-dashed border-gray-300',
 						dragOverIndex === index ? 'border-blue-400' : '',
-						'aspect-7/11 h-auto w-full',
+						'aspect-7/11 h-auto w-full transition-transform',
 						'rounded-sm @xl:rounded-lg @5xl:rounded-xl',
 						'border-1 @5xl:border-2'
 					]}
@@ -315,16 +333,8 @@ base:  56      32     11:7  (4)
 						{@const isDragOver =
 							dragOverIndex === index && stackedCards.length - 1 === stackPosition}
 						<div
-							class={[
-								'absolute',
-								'aspect-7/11 h-auto w-full scale-95 @xl:scale-90',
-								'top-[calc(var(--spacing)*var(--stackOffset)*5)]',
-								'@xl:top-[calc(var(--spacing)*var(--stackOffset)*7.5)]',
-								'@3xl:top-[calc(var(--spacing)*var(--stackOffset)*8)]',
-								'@5xl:top-[calc(var(--spacing)*var(--stackOffset)*8.5)]',
-								'@7xl:top-[calc(var(--spacing)*var(--stackOffset)*9)]'
-							]}
-							style="--stackOffset: {stackPosition};"
+							class={['absolute', 'w-full scale-90', 'top-(--stackOffset)']}
+							style={`--stackOffset: ${stackPosition * cardOffsetHeight}px;`}
 							animate:flip={{ duration: 300 }}
 							in:receive={{ key: stackedCard.id }}
 							out:send={{ key: stackedCard.id }}
@@ -334,6 +344,7 @@ base:  56      32     11:7  (4)
 								{index}
 								{stackPosition}
 								card={stackedCard}
+								containerWidth={cardSystemWidth}
 								hideWhenPreview={stackedCard.isBeingDragged}
 								{isDragOver}
 								onDragStart={handleDragStart}
@@ -352,6 +363,8 @@ base:  56      32     11:7  (4)
 				cards={draggedCards}
 				{draggedIndex}
 				{dragPosition}
+				containerWidth={cardSystemWidth}
+				{cardOffsetHeight}
 				{cardHeight}
 				{cardWidth}
 			/>

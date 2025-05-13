@@ -72,6 +72,10 @@ export interface Position {
 	y: number;
 }
 
+export interface CardSystemProps {
+	cardSystemWidth: number;
+}
+
 export interface CardProps {
 	card: CardType;
 	index: number;
@@ -87,6 +91,7 @@ export interface PokerCardProps {
 	index: number;
 	stackPosition: number;
 	isDragOver: boolean;
+	containerWidth: number;
 	hideWhenPreview: boolean;
 	onDragStart?: (event: DragEvent, card: CardType, index: number, stackPosition: number) => void;
 	onDragEnd?: () => void;
@@ -99,6 +104,8 @@ export interface CardPreviewProps {
 	cards: CardType[];
 	draggedIndex: number;
 	dragPosition: Position;
+	containerWidth: number;
+	cardOffsetHeight: number;
 	cardHeight: number;
 	cardWidth: number;
 }
