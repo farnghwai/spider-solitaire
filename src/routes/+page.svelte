@@ -1,8 +1,9 @@
 <script lang="ts">
+	import { base } from '$app/paths';
+
 	import { onMount, tick } from 'svelte';
 	import { initNewGameSession } from '$lib/shared.svelte';
 	import { initCardStacks } from '$lib/eventStore.svelte';
-	import { RESPONSIVE_CLASS } from '$lib/constants';
 
 	import CardSystem from '$lib/components/CardSystem.svelte';
 	import CompletedDeck from '$lib/components/CompletedDeck.svelte';
@@ -51,7 +52,7 @@
 	<meta name="apple-mobile-web-app-capable" content="yes" />
 	<meta name="apple-mobile-web-app-title" content={title} />
 </svelte:head>
-
+<div class="text-7xl text-white">base: {base}</div>
 <div class="@container flex min-h-dvh min-w-xs flex-col overflow-y-hidden">
 	<div class="hidden items-center justify-center text-white noscript:flex noscript:flex-1">
 		Please enable JavaScript to use this app.
