@@ -16,6 +16,8 @@
 ## Known Issues
 1. Rendering not work well in Safari browser.
 2. Trigger Android Protect Scanning when try install as PWA.
+3. Manual ovveride vulnerable versions of cookie 0.6.0 used by current @sveltejs/kit to 0.7.0 
+  - https://github.com/sveltejs/kit/pull/12767#issuecomment-2402562640
 
 ## Technology Stacks
 - Hosting
