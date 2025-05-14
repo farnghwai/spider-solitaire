@@ -322,7 +322,7 @@ base:  56      32     11:7  (4)
 					]}
 					id="{CARD_SLOT_ID_PREFIX}{index}"
 					data-index={index}
-					role="listitem"
+					role="list"
 					ondragover={(event: DragEvent) => handleDragOver(event, index)}
 					ondrop={handleDrop}
 					ondragleave={handleDragLeave}

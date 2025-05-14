@@ -29,12 +29,13 @@
 	<div class={['grid grid-flow-col @3xl:grid-flow-row', RESPONSIVE_CLASS.GAP_SIZE]}>
 		{#each eventStore.cards.completed as stackedCards, index}
 			<div
+				role="list"
 				class={[
 					'grid grid-rows-subgrid',
 					'@3xl:mt-3 @4xl:mt-4 @6xl:mt-6',
 					'@3xl:-translate-y-(--card-height)'
 				]}
-				style={`z-index: ${30 + index};   --card-height: ${index * cardHeight}px;`}
+				style={`z-index: ${30 + index}; --card-height: ${index * cardHeight}px;`}
 			>
 				{#each stackedCards as stackedCard, stackPosition (stackedCard.id)}
 					<div

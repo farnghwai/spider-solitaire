@@ -1,8 +1,9 @@
 <script lang="ts">
+	import { base } from '$app/paths';
+
 	import { onMount, tick } from 'svelte';
 	import { initNewGameSession } from '$lib/shared.svelte';
 	import { initCardStacks } from '$lib/eventStore.svelte';
-	import { RESPONSIVE_CLASS } from '$lib/constants';
 
 	import CardSystem from '$lib/components/CardSystem.svelte';
 	import CompletedDeck from '$lib/components/CompletedDeck.svelte';
@@ -39,6 +40,7 @@
 
 <svelte:head>
 	<title>{`${title} - A Simple & Classic Card Game`}</title>
+	<link rel="manifest" href="{base}/manifest.webmanifest" />
 	<meta
 		name="description"
 		content="Experience the classic Spider Solitaire card game with a simple design. Play for free online as a demo application—perfect for casual gamers seeking a relaxing, single-player mind challenge."

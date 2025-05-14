@@ -10,12 +10,14 @@
 - [X] Mobile Responsive Design
 - [X] Touch Screen
 - [x] Progressive Web App (PWA)
+- [x] Flip card
 - [ ] Card Pattern
-- [ ] Flip card
 
 ## Known Issues
 1. Rendering not work well in Safari browser.
 2. Trigger Android Protect Scanning when try install as PWA.
+3. Manual ovveride vulnerable versions of cookie 0.6.0 used by current @sveltejs/kit to 0.7.0 
+  - https://github.com/sveltejs/kit/pull/12767#issuecomment-2402562640
 
 ## Technology Stacks
 - Hosting
@@ -76,4 +78,4 @@
     - Qwen 2.5 Code 1.5B
 - Others
   - Transitions effect - [transitions.ts](https://svelte.dev/tutorial/svelte/animations)
-  - Mobile Screen Height handling - [100vh height when address bar is shown - Chrome Mobile] https://stackoverflow.com/questions/52848856/100vh-height-when-address-bar-is-shown-chrome-mobile
+  - Mobile Screen Height handling - [100vh height when address bar is shown - Chrome Mobile](https://stackoverflow.com/questions/52848856/100vh-height-when-address-bar-is-shown-chrome-mobile)
