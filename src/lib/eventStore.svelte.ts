@@ -40,11 +40,25 @@ export const resetInitCardStacksAndEventStore = () => {
 
 export const populateInitCardStacksTo = (cardStatus: CardStatus) => {
 	initCardStacks.display.forEach((currentCardStack) => {
-		cardStatus.display.push([...currentCardStack]);
+		const newCardStack: CardType[] = [];
+		currentCardStack.forEach((card) => {
+			newCardStack.push({ ...card });
+		});
+		cardStatus.display.push(newCardStack);
 	});
-	cardStatus.remaining.push(...initCardStacks.remaining);
+
+	const newRemainingCardStack: CardType[] = [];
+	initCardStacks.remaining.forEach((card) => {
+		newRemainingCardStack.push({ ...card });
+	});
+	cardStatus.remaining.push(...newRemainingCardStack);
+
 	initCardStacks.completed.forEach((currentCardStack) => {
-		cardStatus.completed.push([...currentCardStack]);
+		const newCompletedCardStack: CardType[] = [];
+		currentCardStack.forEach((card) => {
+			newCompletedCardStack.push({ ...card });
+		});
+		cardStatus.completed.push(newCompletedCardStack);
 	});
 };
 
@@ -64,6 +78,7 @@ const handlers: HanderType = {
 
 		piles.forEach((pcard, index) => {
 			pcard.isDraggable = true;
+			pcard.isOpen = true;
 
 			const currentStack = newDisplayState[index];
 			currentStack.push(pcard);
@@ -74,13 +89,17 @@ const handlers: HanderType = {
 	move: (state, action) => {
 		const newDisplayState: CardType[][] = cloneCardTypeState(state.display);
 
-		const movedItem = newDisplayState[action.payload.oldIndex].slice(
-			action.payload.draggedStackPosition
-		);
-		newDisplayState[action.payload.oldIndex].splice(
-			action.payload.draggedStackPosition,
-			movedItem.length
-		);
+		const oldStack = newDisplayState[action.payload.oldIndex];
+
+		const movedItem = oldStack.slice(action.payload.draggedStackPosition);
+		oldStack.splice(action.payload.draggedStackPosition, movedItem.length);
+
+		if (oldStack.length > 0) {
+			const lastCard = oldStack[oldStack.length - 1];
+			if (!lastCard.isOpen) {
+				lastCard.isOpen = true;
+			}
+		}
 		newDisplayState[action.payload.newIndex].push(...movedItem);
 
 		return { ...state, display: newDisplayState };
@@ -126,6 +145,7 @@ function rebuildState(): CardStatus {
 	let newState: CardStatus = { display: [], remaining: [], completed: [] };
 
 	populateInitCardStacksTo(newState);
+
 	for (const action of eventStore.history) {
 		newState = handlers[action.type](newState, action as any); // safe due to rebuild from history
 	}

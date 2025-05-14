@@ -69,21 +69,22 @@ export const updateDraggableStatus = (currentStack: CardType[]) => {
 		let isCardInOrder = true;
 		for (let i = currentStackLastIndex - 1; i >= 0; i--) {
 			const currentStackCard = currentStack[i];
-			if (isCardInOrder) {
-				if (currentStackCard.valueIndex - 1 === currentStackLastCard.valueIndex) {
-					if (!currentStackCard.isDraggable) {
-						currentStackCard.isDraggable = true;
+			if (currentStackCard.isOpen) {
+				if (isCardInOrder) {
+					if (currentStackCard.valueIndex - 1 === currentStackLastCard.valueIndex) {
+						if (!currentStackCard.isDraggable) {
+							currentStackCard.isDraggable = true;
+						}
+					} else {
+						isCardInOrder = false;
+						if (currentStackCard.isDraggable) {
+							currentStackCard.isDraggable = false;
+						}
 					}
 				} else {
-					isCardInOrder = false;
-					if (currentStackCard.isDraggable) {
-						currentStackCard.isDraggable = false;
-					}
+					currentStackCard.isDraggable = false;
 				}
-			} else {
-				currentStackCard.isDraggable = false;
 			}
-
 			currentStackLastCard = { ...currentStackCard };
 		}
 	}
@@ -107,7 +108,8 @@ function generateCardSuites(totalDecks: number) {
 					suit,
 					valueIndex: index,
 					isDraggable: false,
-					isBeingDragged: false
+					isBeingDragged: false,
+					isOpen: false
 				});
 				counter++;
 			});
@@ -161,16 +163,7 @@ export function initNewGameSession() {
 		const currentStackCount = currentStack.length;
 		let currentStackLastCard = currentStack[currentStackCount - 1];
 		currentStackLastCard.isDraggable = true;
-		for (let i = currentStackCount - 1; i >= 0; i--) {
-			const currentStackCard = currentStack[i];
-			if (
-				!currentStackCard.isDraggable &&
-				currentStackCard.valueIndex - 1 === currentStackLastCard.valueIndex
-			) {
-				currentStackCard.isDraggable = true;
-			}
-			currentStackLastCard = { ...currentStackCard };
-		}
+		currentStackLastCard.isOpen = true;
 	});
 	initCardStacks.remaining.push(...pickResuts.remaining);
 	populateInitCardStacksTo(eventStore.cards);

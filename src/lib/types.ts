@@ -10,6 +10,7 @@ export interface CardType {
 	valueIndex: number;
 	isDraggable: boolean;
 	isBeingDragged: boolean;
+	isOpen: boolean;
 }
 
 export type CardColorKeyType = keyof typeof CARD_COLORS;
@@ -96,6 +97,11 @@ export interface PokerCardProps {
 	onDragStart?: (event: DragEvent, card: CardType, index: number, stackPosition: number) => void;
 	onDragEnd?: () => void;
 	onTouchStart?: (event: TouchEvent, card: CardType, index: number, stackPosition: number) => void;
+	class?: ClassValue;
+}
+
+export interface PokerCardCoverProps {
+	cardBalance?: number;
 	class?: ClassValue;
 }
 

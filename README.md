@@ -10,8 +10,8 @@
 - [X] Mobile Responsive Design
 - [X] Touch Screen
 - [x] Progressive Web App (PWA)
+- [x] Flip card
 - [ ] Card Pattern
-- [ ] Flip card
 
 ## Known Issues
 1. Rendering not work well in Safari browser.
@@ -79,4 +79,3 @@
 - Others
   - Transitions effect - [transitions.ts](https://svelte.dev/tutorial/svelte/animations)
   - Mobile Screen Height handling - [100vh height when address bar is shown - Chrome Mobile](https://stackoverflow.com/questions/52848856/100vh-height-when-address-bar-is-shown-chrome-mobile)
-  - Prerender base path fix - [URLs not reflecting base path in SvelteKit + @sveltejs/adapter-static setup #11554](https://github.com/sveltejs/kit/discussions/11554)
