@@ -53,7 +53,7 @@
 	<meta name="apple-mobile-web-app-capable" content="yes" />
 	<meta name="apple-mobile-web-app-title" content={title} />
 </svelte:head>
-
+<div class="text-white">Base: {base}</div>
 <div class="@container flex min-h-dvh min-w-xs flex-col overflow-y-hidden">
 	<div class="hidden items-center justify-center text-white noscript:flex noscript:flex-1">
 		Please enable JavaScript to use this app.
