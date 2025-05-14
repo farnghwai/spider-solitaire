@@ -40,7 +40,7 @@
 
 <svelte:head>
 	<title>{`${title} - A Simple & Classic Card Game`}</title>
-	<link rel="manifest" href="{base}/manifest.json" />
+	<link rel="manifest" href="{base}/manifest.webmanifest" />
 	<meta
 		name="description"
 		content="Experience the classic Spider Solitaire card game with a simple design. Play for free online as a demo application—perfect for casual gamers seeking a relaxing, single-player mind challenge."
@@ -53,7 +53,7 @@
 	<meta name="apple-mobile-web-app-capable" content="yes" />
 	<meta name="apple-mobile-web-app-title" content={title} />
 </svelte:head>
-<div class="text-white">Base: {base}</div>
+<div class="text-white">Base1: {base}</div>
 <div class="@container flex min-h-dvh min-w-xs flex-col overflow-y-hidden">
 	<div class="hidden items-center justify-center text-white noscript:flex noscript:flex-1">
 		Please enable JavaScript to use this app.
