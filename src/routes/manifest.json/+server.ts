@@ -1,6 +1,8 @@
 import { json } from '@sveltejs/kit';
 import { base } from '$app/paths';
 
+export const prerender = true;
+
 export const GET = () => {
 	return json({
 		name: 'Spider Solitaire',
