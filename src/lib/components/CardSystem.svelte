@@ -34,9 +34,9 @@
 
 	const cardOffsetHeight = $derived.by(() => {
 		const fontSize = calculateFontSize(cardSystemWidth);
-		const lineHeight = fontSize * 1.5;
-		const offsetHeight = 6 + lineHeight;
-		const scale = 0.9; // card size is 90% of slot size
+		const lineHeight = fontSize * 1.0;
+		const offsetHeight = 4 + lineHeight;
+		const scale = 1; // card size is 90% of slot size
 		return offsetHeight * scale;
 	});
 
@@ -311,6 +311,7 @@ base:  56      32     11:7  (4)
 		class={['flex flex-1 justify-center', RESPONSIVE_CLASS.GAP_SIZE]}
 	>
 		{#each eventStore.cards.display as stackedCards, index}
+			{@const lastStackPosition = stackedCards.length - 1}
 			<div class="min-w-6 flex-1">
 				<div
 					class={[
@@ -332,6 +333,7 @@ base:  56      32     11:7  (4)
 					{#each stackedCards as stackedCard, stackPosition (stackedCard.id)}
 						{@const isDragOver =
 							dragOverIndex === index && stackedCards.length - 1 === stackPosition}
+						{@const isLastStackPosition = lastStackPosition === stackPosition}
 						<div
 							class={['absolute', 'w-full scale-90', 'top-(--stackOffset)']}
 							style={`--stackOffset: ${stackPosition * cardOffsetHeight}px;`}
@@ -347,6 +349,7 @@ base:  56      32     11:7  (4)
 								containerWidth={cardSystemWidth}
 								hideWhenPreview={stackedCard.isBeingDragged}
 								{isDragOver}
+								{isLastStackPosition}
 								onDragStart={handleDragStart}
 								onTouchStart={handleTouchStart}
 							/>

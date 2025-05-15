@@ -91,9 +91,10 @@ export interface PokerCardProps {
 	card: CardType;
 	index: number;
 	stackPosition: number;
-	isDragOver: boolean;
 	containerWidth: number;
 	hideWhenPreview: boolean;
+	isDragOver: boolean;
+	isLastStackPosition: boolean;
 	onDragStart?: (event: DragEvent, card: CardType, index: number, stackPosition: number) => void;
 	onDragEnd?: () => void;
 	onTouchStart?: (event: TouchEvent, card: CardType, index: number, stackPosition: number) => void;
