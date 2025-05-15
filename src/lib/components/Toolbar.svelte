@@ -9,13 +9,7 @@
 	let showUndoButton = $state(true);
 </script>
 
-<div
-	class={[
-		'flex justify-center bg-black/30',
-		RESPONSIVE_CLASS.GAP_SIZE,
-		RESPONSIVE_CLASS.PADDING_SIZE
-	]}
->
+<div class={['flex justify-center bg-black/30', RESPONSIVE_CLASS.GAP_SIZE]}>
 	<!-- Settings Button -->
 	<SettingsButton bind:showUndoButton />
 
