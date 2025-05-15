@@ -7,7 +7,7 @@
 
 <div
 	class={[
-		'flex aspect-7/11 w-full min-w-6 items-center justify-center bg-white shadow-md',
+		'flex aspect-7/13 w-full min-w-6 items-center justify-center bg-white shadow-md',
 		'rounded-sm @xl:rounded-md ',
 		'p-0.5 @3xl:p-1',
 		className
