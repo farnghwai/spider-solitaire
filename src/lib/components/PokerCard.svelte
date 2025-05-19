@@ -4,6 +4,9 @@
 	import type { PokerCardProps } from '$lib/types';
 	import { CARD_COLORS } from '$lib/constants';
 	import PokerCardCover from './PokerCardCover.svelte';
+	import PokerCardJack from './PokerCardJack.svelte';
+	import PokerCardQueen from './PokerCardQueen.svelte';
+	import PokerCardKing from './PokerCardKing.svelte';
 
 	const {
 		card,
@@ -77,6 +80,16 @@
 						<div>{suitSymbol}</div>
 					{/if}
 					<div class="rotate-x-180">{suitSymbol}</div>
+				</div>
+			{:else if ['J', 'Q', 'K'].includes(card.value)}
+				<div class="relative flex flex-1 justify-center">
+					{#if card.value === 'J'}
+						<PokerCardJack />
+					{:else if card.value === 'Q'}
+						<PokerCardQueen />
+					{:else if card.value === 'K'}
+						<PokerCardKing />
+					{:else}{/if}
 				</div>
 			{:else if ['4', '5', '6', '7', '8', '9', '10'].includes(card.value)}
 				<div
