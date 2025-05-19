@@ -25,15 +25,15 @@
 	});
 </script>
 
-<div class="flex flex-1 items-center @3xl:flex-col">
-	<div class={['grid grid-flow-col @3xl:grid-flow-row', RESPONSIVE_CLASS.GAP_SIZE]}>
+<div class="flex flex-1 items-center @2xl:flex-col">
+	<div class={['grid grid-flow-col @2xl:grid-flow-row', RESPONSIVE_CLASS.GAP_SIZE]}>
 		{#each eventStore.cards.completed as stackedCards, index}
 			<div
 				role="list"
 				class={[
 					'grid grid-rows-subgrid',
-					'@3xl:mt-3 @4xl:mt-4 @6xl:mt-6',
-					'@3xl:-translate-y-(--card-height)'
+					'@2xl:mt-3 @4xl:mt-4 @6xl:mt-6',
+					'@2xl:-translate-y-(--card-height)'
 				]}
 				style={`z-index: ${30 + index}; --card-height: ${index * cardHeight}px;`}
 			>
@@ -52,6 +52,7 @@
 							containerWidth={cardWidthFontSize}
 							hideWhenPreview={false}
 							isDragOver={false}
+							isLastStackPosition={false}
 						/>
 					</div>
 				{/each}

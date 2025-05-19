@@ -22,6 +22,7 @@
 	let isBeingDragged = $state(false);
 
 	let dragPosition: Position = $state({ x: 0, y: 0 });
+	let offsetPosition: Position = $state({ x: 0, y: 0 });
 	let cardSystemElem = $state<HTMLDivElement | null>(null);
 
 	const CARD_SLOT_ID_PREFIX = 'slot-';
@@ -34,9 +35,9 @@
 
 	const cardOffsetHeight = $derived.by(() => {
 		const fontSize = calculateFontSize(cardSystemWidth);
-		const lineHeight = fontSize * 1.5;
-		const offsetHeight = 6 + lineHeight;
-		const scale = 0.9; // card size is 90% of slot size
+		const lineHeight = fontSize * 1.0;
+		const offsetHeight = 4 + lineHeight;
+		const scale = 1; // card size is 90% of slot size
 		return offsetHeight * scale;
 	});
 
@@ -202,14 +203,20 @@
 		draggedIndex = index;
 		draggedStackPosition = stackPosition;
 
+		const htmlElem = event.currentTarget as HTMLDivElement;
+		const htmlElemRect = htmlElem.getBoundingClientRect();
+
 		// Record the touch position
 		const touch = event.touches[0];
-		dragPosition.x = touch.clientX;
-		dragPosition.y = touch.clientY;
+		offsetPosition.x = touch.clientX - htmlElemRect.left;
+		offsetPosition.y = touch.clientY - htmlElemRect.top;
+
+		dragPosition.x = touch.clientX - offsetPosition.x;
+		dragPosition.y = touch.clientY - offsetPosition.y;
 
 		// copy original card dimension (height x width)
-		cardHeight = (event.currentTarget as HTMLDivElement).clientHeight;
-		cardWidth = (event.currentTarget as HTMLDivElement).clientWidth;
+		cardHeight = htmlElem.clientHeight;
+		cardWidth = htmlElem.clientWidth;
 	};
 
 	function resetStatus() {
@@ -265,8 +272,8 @@
 				event.preventDefault();
 
 				const touch = event.touches[0];
-				dragPosition.x = touch.clientX;
-				dragPosition.y = touch.clientY;
+				dragPosition.x = touch.clientX - offsetPosition.x;
+				dragPosition.y = touch.clientY - offsetPosition.y;
 
 				const touchOverIndex = findTouchSlot(dragPosition);
 				if (touchOverIndex !== -1) {
@@ -311,6 +318,7 @@ base:  56      32     11:7  (4)
 		class={['flex flex-1 justify-center', RESPONSIVE_CLASS.GAP_SIZE]}
 	>
 		{#each eventStore.cards.display as stackedCards, index}
+			{@const lastStackPosition = stackedCards.length - 1}
 			<div class="min-w-6 flex-1">
 				<div
 					class={[
@@ -332,6 +340,7 @@ base:  56      32     11:7  (4)
 					{#each stackedCards as stackedCard, stackPosition (stackedCard.id)}
 						{@const isDragOver =
 							dragOverIndex === index && stackedCards.length - 1 === stackPosition}
+						{@const isLastStackPosition = lastStackPosition === stackPosition}
 						<div
 							class={['absolute', 'w-full scale-90', 'top-(--stackOffset)']}
 							style={`--stackOffset: ${stackPosition * cardOffsetHeight}px;`}
@@ -347,6 +356,7 @@ base:  56      32     11:7  (4)
 								containerWidth={cardSystemWidth}
 								hideWhenPreview={stackedCard.isBeingDragged}
 								{isDragOver}
+								{isLastStackPosition}
 								onDragStart={handleDragStart}
 								onTouchStart={handleTouchStart}
 							/>

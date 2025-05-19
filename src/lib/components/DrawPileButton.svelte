@@ -56,6 +56,7 @@
 					containerWidth={0}
 					hideWhenPreview={false}
 					isDragOver={false}
+					isLastStackPosition={false}
 				/>
 			</div>
 		{/each}

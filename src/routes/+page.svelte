@@ -62,8 +62,8 @@
 	{#if !isLoading}
 		<div
 			class={[
-				'flex flex-1 flex-col @3xl:flex-row',
-				'p-0.5 @3xl:p-2 @7xl:p-4',
+				'flex flex-1 flex-col @2xl:flex-row',
+				'p-0.5 @2xl:p-2 @7xl:p-4',
 				'mx-auto w-full max-w-7xl gap-4 @5xl:gap-12 @7xl:gap-16'
 			]}
 		>
@@ -73,10 +73,8 @@
 			<div
 				class={[
 					'flex items-center justify-between',
-					'flex-row @3xl:flex-col',
-					'order-first @3xl:order-last',
-					// RESPONSIVE_CLASS.PADDING_SIZE,
-					//RESPONSIVE_CLASS.DRAW_PILE_CARD_COL_SIZE
+					'flex-row @2xl:flex-col',
+					'order-first @2xl:order-last',
 					'p-1'
 				]}
 			>

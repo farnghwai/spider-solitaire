@@ -7,9 +7,9 @@
 
 <div
 	class={[
-		'flex aspect-7/11 w-full min-w-6 items-center justify-center bg-white shadow-md',
+		'flex aspect-7/13 w-full min-w-6 items-center justify-center bg-white shadow-md',
 		'rounded-sm @xl:rounded-md ',
-		'p-0.5 @3xl:p-1',
+		'p-0.5 @2xl:p-1',
 		className
 	]}
 >
@@ -18,7 +18,7 @@
 			'flex h-full w-full flex-col items-center justify-center',
 			'bg-gradient-to-br from-red-500 to-red-700',
 			'rounded-xs @xl:rounded-md',
-			'px-0 pt-2 pb-1 @3xl:pt-4 @3xl:pb-2'
+			'px-0 pt-2 pb-1 @2xl:pt-4 @2xl:pb-2'
 		]}
 	>
 		<svg viewBox="10 15 80 70" xmlns="http://www.w3.org/2000/svg">
@@ -28,7 +28,7 @@
 			/>
 		</svg>
 		{#if cardBalance > 0}
-			<span class={['text-xs transition-all @3xl:text-sm @5xl:text-base', 'text-white']}
+			<span class={['text-xs transition-all @2xl:text-sm @5xl:text-base', 'text-white']}
 				>{cardBalance}</span
 			>
 		{/if}
