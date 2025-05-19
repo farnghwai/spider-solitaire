@@ -50,7 +50,7 @@
 			class={['w-full', 'rounded-t-md', 'h-1', card.isDraggable && 'border-t-2 border-t-teal-400']}
 			style="background: repeating-linear-gradient(90deg, #ff9999, #ff9999 3px, white 3px, white 6px);"
 		></div>
-		<div class="flex flex-1 flex-col px-0.5 pb-0.5 @3xl:px-1 @3xl:pb-1">
+		<div class="flex flex-1 flex-col px-0.5 pb-0.5 @2xl:px-1 @2xl:pb-1">
 			<div class="flex items-center justify-between">
 				<div
 					class="text-(length:--sp-text-size) leading-none font-bold"
