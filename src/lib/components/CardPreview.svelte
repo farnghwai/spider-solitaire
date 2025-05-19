@@ -18,7 +18,7 @@
 
 <div
 	{id}
-	class="pointer-events-none fixed z-[9999] flex -translate-x-1/2 -translate-y-4 items-center"
+	class="pointer-events-none fixed z-[9999] flex items-center"
 	style={`left: ${dragPosition.x}px; top: ${dragPosition.y}px`}
 >
 	<div class="relative flex aspect-7/11 flex-col">

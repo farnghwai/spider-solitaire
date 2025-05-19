@@ -22,6 +22,7 @@
 	let isBeingDragged = $state(false);
 
 	let dragPosition: Position = $state({ x: 0, y: 0 });
+	let offsetPosition: Position = $state({ x: 0, y: 0 });
 	let cardSystemElem = $state<HTMLDivElement | null>(null);
 
 	const CARD_SLOT_ID_PREFIX = 'slot-';
@@ -202,14 +203,20 @@
 		draggedIndex = index;
 		draggedStackPosition = stackPosition;
 
+		const htmlElem = event.currentTarget as HTMLDivElement;
+		const htmlElemRect = htmlElem.getBoundingClientRect();
+
 		// Record the touch position
 		const touch = event.touches[0];
-		dragPosition.x = touch.clientX;
-		dragPosition.y = touch.clientY;
+		offsetPosition.x = touch.clientX - htmlElemRect.left;
+		offsetPosition.y = touch.clientY - htmlElemRect.top;
+
+		dragPosition.x = touch.clientX - offsetPosition.x;
+		dragPosition.y = touch.clientY - offsetPosition.y;
 
 		// copy original card dimension (height x width)
-		cardHeight = (event.currentTarget as HTMLDivElement).clientHeight;
-		cardWidth = (event.currentTarget as HTMLDivElement).clientWidth;
+		cardHeight = htmlElem.clientHeight;
+		cardWidth = htmlElem.clientWidth;
 	};
 
 	function resetStatus() {
@@ -265,8 +272,8 @@
 				event.preventDefault();
 
 				const touch = event.touches[0];
-				dragPosition.x = touch.clientX;
-				dragPosition.y = touch.clientY;
+				dragPosition.x = touch.clientX - offsetPosition.x;
+				dragPosition.y = touch.clientY - offsetPosition.y;
 
 				const touchOverIndex = findTouchSlot(dragPosition);
 				if (touchOverIndex !== -1) {
