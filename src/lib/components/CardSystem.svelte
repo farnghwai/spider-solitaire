@@ -109,7 +109,13 @@
 			// );
 			// Set drag image and effects
 			if (cardSystemElem) {
+				const htmlElem = event.currentTarget as HTMLDivElement;
+				const htmlElemRect = htmlElem.getBoundingClientRect();
+				offsetPosition.x = event.clientX - htmlElemRect.left;
+				offsetPosition.y = event.clientY - htmlElemRect.top;
+
 				const previewId = generatePreviewId();
+
 				const dragPreviewElem = mount(CardPreview, {
 					target: cardSystemElem,
 					props: {
@@ -125,7 +131,7 @@
 				});
 				const dragPreview = document.getElementById(previewId);
 				if (dragPreview) {
-					event.dataTransfer.setDragImage(dragPreview, 30, 15);
+					event.dataTransfer.setDragImage(dragPreview, offsetPosition.x, offsetPosition.y);
 				}
 				// Clean up after dragging
 				setTimeout(() => {
