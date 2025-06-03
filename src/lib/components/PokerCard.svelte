@@ -35,7 +35,7 @@
 		'rounded-md @xl:rounded-lg',
 		isDragOver ? 'bg-amber-100' : 'bg-white',
 		CARD_COLORS[CardSuit[card.suit].color],
-		card.isDraggable && 'cursor-grab hover:-translate-y-1 hover:shadow-md',
+		card.isDraggable && 'hover:-translate-y-1 hover:shadow-md',
 		hideWhenPreview && card.isBeingDragged && 'opacity-0',
 		'transition-all duration-300',
 		!card.isOpen && 'rotate-y-180',

@@ -42,7 +42,7 @@
 						animate:flip={{ duration: 300 }}
 						in:receive={{ key: stackedCard.id }}
 						out:send={{ key: stackedCard.id }}
-						class=" w-(--card-width)"
+						class=" aspect-7/11 w-(--card-width)"
 						style={`z-index: ${20 - stackPosition}; --card-width: ${cardWidth}px;`}
 					>
 						<PokerCard

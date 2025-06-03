@@ -1,4 +1,4 @@
-import type { CardType, GameState } from '$lib/types';
+import type { CardType, GameState, CheckIsValidDropMode } from '$lib/types';
 import { CARD_VALUES } from '$lib/constants';
 
 export function checkIfIsCompleteSuitStack(currentCardStack: CardType[]) {
@@ -29,18 +29,41 @@ export function checkIfIsWinning(store: GameState) {
 	return false;
 }
 
-export function checkIsValidDrop(newCardStack: CardType[], draggedCards: CardType[]) {
+export function checkIsValidDrop(
+	newCardStack: CardType[],
+	draggedCards: CardType[],
+	checkMode?: CheckIsValidDropMode
+) {
 	let isValidToDrop = false;
+	if (draggedCards.length === 0) {
+		return isValidToDrop;
+	}
 
 	if (newCardStack.length === 0) {
-		isValidToDrop = true;
-	} else {
-		const newCardStackLastPosition = newCardStack.length - 1;
-		const newLastCard = newCardStack[newCardStackLastPosition];
+		isValidToDrop = ['sameSuitOnly', 'emptySlotLast'].includes(checkMode || '') ? false : true;
+		return isValidToDrop;
+	}
 
-		if (draggedCards.length > 0 && newLastCard.valueIndex - 1 === draggedCards[0].valueIndex) {
+	const newCardStackLastPosition = newCardStack.length - 1;
+	const newLastCard = newCardStack[newCardStackLastPosition];
+
+	const dragedfirstCard = draggedCards[0];
+	const matchExpectedValue = newLastCard.valueIndex - 1 === dragedfirstCard.valueIndex;
+	if (!matchExpectedValue) {
+		return isValidToDrop;
+	}
+
+	switch (checkMode) {
+		case 'sameSuitOnly':
+			const matchedSuit = newLastCard.suit === dragedfirstCard.suit;
+			if (matchedSuit) {
+				isValidToDrop = true;
+			}
+			break;
+		default: {
 			isValidToDrop = true;
 		}
 	}
+
 	return isValidToDrop;
 }

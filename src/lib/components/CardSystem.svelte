@@ -3,7 +3,13 @@
 	import { flip } from 'svelte/animate';
 	import { send, receive } from './transition';
 
-	import type { Position, CardType, CardSystemProps } from '$lib/types';
+	import type {
+		Position,
+		CardType,
+		CardSystemProps,
+		GhostCardType,
+		CheckIsValidDropMode
+	} from '$lib/types';
 	import { eventStore, dispatch } from '$lib/eventStore.svelte';
 	import { RESPONSIVE_CLASS, NO_OF_CARD_SLOT } from '$lib/constants';
 	import { checkIfIsCompleteSuitStack, checkIfIsWinning, checkIsValidDrop } from '$lib/gameRules';
@@ -80,6 +86,108 @@
 		}
 	}
 
+	function tryMoveCardByStage(
+		ghostCard: GhostCardType,
+		checkMode: CheckIsValidDropMode,
+		index: number,
+		stackPosition: number
+	) {
+		let hasDrop = false;
+		ghostCard.current.init();
+		while (!(ghostCard.state.Left.hasReachedBoundary && ghostCard.state.Right.hasReachedBoundary)) {
+			let newCardStack = eventStore.cards.display[ghostCard.current.index];
+
+			let isValidToDrop = checkIsValidDrop(newCardStack, draggedCards, checkMode);
+			if (isValidToDrop) {
+				draggedIndex = index;
+				draggedStackPosition = stackPosition;
+				dragOverIndex = ghostCard.current.index;
+				moveItems();
+				hasDrop = true;
+				break;
+			}
+
+			ghostCard.state[ghostCard.current.direction].move();
+
+			ghostCard.current.tryFlipDirection();
+		}
+		return hasDrop;
+	}
+
+	function handleClick(
+		event: MouseEvent & {
+			currentTarget: EventTarget & HTMLButtonElement;
+		},
+		index: number,
+		stackPosition: number
+	) {
+		event.preventDefault();
+
+		const selectedCardStack = eventStore.cards.display[index];
+		draggedCards = selectedCardStack.slice(stackPosition);
+		draggedCards.forEach((dcard) => {
+			dcard.isBeingDragged = true;
+		});
+
+		const ghostCard: GhostCardType = {
+			state: {
+				Left: {
+					boundary: 0,
+					index: index - 1,
+					move() {
+						this.index--;
+					},
+					get hasReachedBoundary() {
+						return this.index < this.boundary;
+					}
+				},
+				Right: {
+					boundary: eventStore.cards.display.length - 1,
+					index: index + 1,
+					move() {
+						this.index++;
+					},
+					get hasReachedBoundary() {
+						return this.index > this.boundary;
+					}
+				}
+			},
+			current: {
+				index: -1,
+				direction: 'Left',
+				tryFlipDirection() {
+					const newDirection = this.direction === 'Left' ? 'Right' : 'Left';
+
+					if (!ghostCard.state[newDirection].hasReachedBoundary) {
+						this.direction = newDirection;
+					}
+					this.index = ghostCard.state[this.direction].index;
+				},
+				init() {
+					ghostCard.state.Left.index = index - 1;
+					ghostCard.state.Right.index = index + 1;
+					this.direction = 'Left';
+					this.index = ghostCard.state[this.direction].index;
+
+					if (ghostCard.state[this.direction].hasReachedBoundary) {
+						this.tryFlipDirection();
+					}
+				}
+			}
+		};
+
+		let i = 0;
+		const stages: CheckIsValidDropMode[] = ['sameSuitOnly', 'emptySlotLast', undefined];
+		for (i = 0; i < stages.length; i++) {
+			const hasDrop = tryMoveCardByStage(ghostCard, stages[i], index, stackPosition);
+			if (hasDrop) {
+				break;
+			}
+		}
+
+		resetStatus();
+	}
+
 	// Handle drag start
 	function handleDragStart(event: DragEvent, card: CardType, index: number, stackPosition: number) {
 		isBeingDragged = true;
@@ -109,7 +217,6 @@
 			// );
 			// Set drag image and effects
 			if (cardSystemElem) {
-				const htmlElem = event.currentTarget as HTMLDivElement;
 				const htmlElemRect = htmlElem.getBoundingClientRect();
 				offsetPosition.x = event.clientX - htmlElemRect.left;
 				offsetPosition.y = event.clientY - htmlElemRect.top;
@@ -338,13 +445,17 @@
 						{@const isDragOver =
 							dragOverIndex === index && stackedCards.length - 1 === stackPosition}
 						{@const isLastStackPosition = lastStackPosition === stackPosition}
-						<div
+						<button
 							class={['absolute', 'h-full w-full p-1', 'top-(--stackOffset)']}
 							style={`--stackOffset: ${stackPosition * cardOffsetHeight}px;`}
 							animate:flip={{ duration: 300 }}
 							in:receive={{ key: stackedCard.id }}
 							out:send={{ key: stackedCard.id }}
 							id="card-c-{index}-s-{stackPosition}"
+							onclick={(event) =>
+								stackedCard.isOpen && stackedCard.isDraggable
+									? handleClick(event, index, stackPosition)
+									: ''}
 						>
 							<PokerCard
 								{index}
@@ -357,7 +468,7 @@
 								onDragStart={handleDragStart}
 								onTouchStart={handleTouchStart}
 							/>
-						</div>
+						</button>
 					{/each}
 				</div>
 			</div>

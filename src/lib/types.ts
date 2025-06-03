@@ -116,3 +116,23 @@ export interface CardPreviewProps {
 	cardHeight: number;
 	cardWidth: number;
 }
+
+export type CheckIsValidDropMode = 'sameSuitOnly' | 'emptySlotLast' | undefined;
+
+export type GhostCardDirectionType = 'Left' | 'Right';
+export type GhostCardType = {
+	state: {
+		[Propety in GhostCardDirectionType]: {
+			boundary: number;
+			index: number;
+			move: () => void;
+			hasReachedBoundary: boolean;
+		};
+	};
+	current: {
+		index: number;
+		direction: GhostCardDirectionType;
+		tryFlipDirection: () => void;
+		init: () => void;
+	};
+};
