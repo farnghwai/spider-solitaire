@@ -36,7 +36,7 @@
 	const cardOffsetHeight = $derived.by(() => {
 		const fontSize = calculateFontSize(cardSystemWidth);
 		const lineHeight = fontSize * 1.0;
-		const offsetHeight = 4 + lineHeight;
+		const offsetHeight = 0 + lineHeight;
 		const scale = 1; // card size is 90% of slot size
 		return offsetHeight * scale;
 	});
@@ -300,15 +300,6 @@
 			// document.removeEventListener('touchend', handleTouchEnd);
 		};
 	});
-
-	/*
-      h    x  w
- 7xl: 176     112     11:7 (16)
- 5xl: 132      84     11:7 (12)
- 3xl: 110      70     11:7 (10)
-  xl:  88      56     11:7  (8)
-base:  56      32     11:7  (4)
-*/
 </script>
 
 <!-- <svelte:document onmousemove={handleDocumentMouseMove} onmouseup={handleDocumentMouseUp} /> -->
@@ -342,7 +333,7 @@ base:  56      32     11:7  (4)
 							dragOverIndex === index && stackedCards.length - 1 === stackPosition}
 						{@const isLastStackPosition = lastStackPosition === stackPosition}
 						<div
-							class={['absolute', 'w-full scale-90', 'top-(--stackOffset)']}
+							class={['absolute', 'h-full w-full p-1', 'top-(--stackOffset)']}
 							style={`--stackOffset: ${stackPosition * cardOffsetHeight}px;`}
 							animate:flip={{ duration: 300 }}
 							in:receive={{ key: stackedCard.id }}

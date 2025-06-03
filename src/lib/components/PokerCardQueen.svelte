@@ -1,6 +1,6 @@
 <svg
 	version="1.1"
-	class="absolute top-0 bottom-0 h-auto max-h-full w-auto max-w-full scale-[1.4_0.995] rounded-sm object-contain"
+	class="absolute top-0 bottom-0 h-auto max-h-full w-auto max-w-full scale-x-[1.81] rounded-sm object-cover"
 	viewBox="0 0 313 679"
 	xmlns="http://www.w3.org/2000/svg"
 >

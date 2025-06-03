@@ -177,7 +177,7 @@ export const calculateFontSize = (width: number) => {
 	const minWidth = 320; // min-w-xs, min width size
 	const maxWidth = 1280; // max-w-7xl, max width size
 	const minFontSize = 10;
-	const maxFontSize = 36;
+	const maxFontSize = 48;
 
 	if (width <= minWidth) return minFontSize;
 	if (width >= maxWidth) return maxFontSize;
