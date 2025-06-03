@@ -11,7 +11,7 @@
 - [X] Touch Screen
 - [x] Progressive Web App (PWA)
 - [x] Flip card
-- [ ] Card Pattern
+- [x] Card Pattern
 
 ## Known Issues
 1. Rendering not work well in Safari browser.
@@ -71,6 +71,7 @@
       - Winning Animation
     - [ChatGPT GPT-4o](https://chatgpt.com/):
       - Undo
+      - Generate J,Q,K image
   - Local
     - Gemma3 12B
     - Qwen3 8B
@@ -79,3 +80,4 @@
 - Others
   - Transitions effect - [transitions.ts](https://svelte.dev/tutorial/svelte/animations)
   - Mobile Screen Height handling - [100vh height when address bar is shown - Chrome Mobile](https://stackoverflow.com/questions/52848856/100vh-height-when-address-bar-is-shown-chrome-mobile)
+  - Converting image to svg - [Inskscape](https://inkscape.org/)
