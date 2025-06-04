@@ -14,7 +14,12 @@
 		return (cardSystemWidth / NO_OF_CARD_SLOT) * 0.8; // simplified card width calculation by using some assumpation
 	});
 
-	// let { onClick }: DrawPileProps = $props();
+	/**
+	 * Handles click event on draw pile button
+	 * Calculates remaining card count and dispatches drawPile action
+	 * @param event - Mouse click event
+	 * @returns void
+	 */
 	function handleDrawPileClick(event: MouseEvent) {
 		const remaingCount =
 			eventStore.cards.remaining.length < NO_OF_CARD_SLOT

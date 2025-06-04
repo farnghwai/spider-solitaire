@@ -75,8 +75,11 @@
   - Local
     - Gemma3 12B
     - Qwen3 8B
+      - Generate JSDoc (Primary)
     - Qwen 2.5 Code 7B
     - Qwen 2.5 Code 1.5B
+    - Devstral 24B (2505) - UD-Q2_K_XL quant
+      - Generate JSDoc (Experiment)
 - Others
   - Transitions effect - [transitions.ts](https://svelte.dev/tutorial/svelte/animations)
   - Mobile Screen Height handling - [100vh height when address bar is shown - Chrome Mobile](https://stackoverflow.com/questions/52848856/100vh-height-when-address-bar-is-shown-chrome-mobile)

@@ -1,5 +1,3 @@
-// Cards data
-
 import type { CardType, CardSuitKeyType, CardSuitRecordType, CardColorKeyType } from './types';
 import { CARD_COLORS, NO_OF_CARD_SLOT, CARD_VALUES } from '$lib/constants';
 import {
@@ -16,6 +14,10 @@ export const CardSuit: Record<CardSuitKeyType, CardSuitRecordType> = {
 	diamond: { icon: '♦', color: 'RED' }
 } as const;
 
+/**
+ * Groups card suits by their color
+ * @returns Record mapping color keys to array of suit keys
+ */
 const groupSuitsByColor = () => {
 	const colorGroups = {} as Record<CardColorKeyType, CardSuitKeyType[]>;
 
@@ -35,6 +37,10 @@ const groupSuitsByColor = () => {
 	return colorGroups;
 };
 
+/**
+ * Returns two suit keys of different colors
+ * @returns Array containing two suit keys with different colors
+ */
 export const getRandomDifferentColorSuits = () => {
 	const colorGroups = groupSuitsByColor();
 	const colors = Object.keys(colorGroups) as (keyof typeof CARD_COLORS)[]; //Explicitly cast to CardColors[]
@@ -54,13 +60,17 @@ export const getRandomDifferentColorSuits = () => {
 	return [suitKey1, suitKey2];
 };
 
-// multiple of 10 (NO_OF_SLOT
+// multiple of 10 (NO_OF_SLOT)
 export const GameSettings = {
 	difficultyMode: {
 		simple: { totalDeck: 6, noOfDrawRound: 5 }
 	}
 };
 
+/**
+ * Updates draggable status for cards in a stack
+ * @param currentStack - Array of card objects to update
+ */
 export const updateDraggableStatus = (currentStack: CardType[]) => {
 	if (currentStack.length > 0) {
 		const currentStackLastIndex = currentStack.length - 1;
@@ -120,7 +130,11 @@ function generateCardSuites(totalDecks: number) {
 
 // reference: https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
 // suggest by ChatGPT GPT-4o
-// Shuffle the array using Fisher-Yates algorithm
+/**
+ * Shuffles an array using Fisher-Yates algorithm
+ * @param array - Array to shuffle
+ * @returns New shuffled array
+ */
 function shuffleArray<T>(array: Array<T>) {
 	const arr = [...array];
 	for (let i = arr.length - 1; i > 0; i--) {
@@ -130,8 +144,13 @@ function shuffleArray<T>(array: Array<T>) {
 	return arr;
 }
 
+/**
+ * Splits array into picked and remaining cards
+ * @param array - Array to split
+ * @param noOfCards - Number of cards to pick
+ * @returns Object containing picked and remaining arrays
+ */
 function keepNoOfCardsForDraw<T>(array: Array<T>, noOfCards: number) {
-	//ratio = 0.6) {
 	const shuffled = shuffleArray(array);
 	// const splitIndex = Math.floor(shuffled.length * ratio);
 	const set1 = shuffled.slice(0, noOfCards);
@@ -142,6 +161,9 @@ function keepNoOfCardsForDraw<T>(array: Array<T>, noOfCards: number) {
 	};
 }
 
+/**
+ * Initializes a new game session
+ */
 export function initNewGameSession() {
 	resetInitCardStacksAndEventStore();
 
@@ -170,7 +192,11 @@ export function initNewGameSession() {
 	eventStore.totalDeck = totalDecks;
 }
 
-// Calculate current font size based on container width
+/**
+ * Calculates font size based on container width
+ * @param width - Container width
+ * @returns Calculated font size
+ */
 export const calculateFontSize = (width: number) => {
 	// Base font size is 10px at 300px width
 	// Max font size is 16px at 1000px width or larger

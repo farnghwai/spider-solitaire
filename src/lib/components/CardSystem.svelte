@@ -18,17 +18,17 @@
 	import CardPreview from './CardPreview.svelte';
 	import PokerCard from './PokerCard.svelte';
 
+	// Modern Svelte 5 props
 	let { cardSystemWidth = $bindable() }: CardSystemProps = $props();
 
-	// Modern Svelte 5 props
 	let draggedCards = $state<CardType[]>([]);
 	let draggedIndex = $state(-1);
 	let draggedStackPosition = $state(-1);
 	let dragOverIndex = $state(-1);
 	let isBeingDragged = $state(false);
 
-	let dragPosition: Position = $state({ x: 0, y: 0 });
-	let offsetPosition: Position = $state({ x: 0, y: 0 });
+	let dragPosition = $state<Position>({ x: 0, y: 0 });
+	let offsetPosition = $state<Position>({ x: 0, y: 0 });
 	let cardSystemElem = $state<HTMLDivElement | null>(null);
 
 	const CARD_SLOT_ID_PREFIX = 'slot-';
@@ -47,10 +47,17 @@
 		return offsetHeight * scale;
 	});
 
+	/**
+	 * Generates a unique ID for a card preview.
+	 * @returns A unique ID for a card preview.
+	 */
 	function generatePreviewId() {
 		return `${CARD_PREVIEW_ID_PREFIX}${Date.now()}`;
 	}
 
+	/**
+	 * Moves the dragged cards to the drop target if the drop is valid.
+	 */
 	function moveItems() {
 		if (draggedCards.length > 0 && draggedIndex !== -1 && draggedStackPosition !== -1) {
 			let newCardStack = eventStore.cards.display[dragOverIndex];
@@ -86,6 +93,14 @@
 		}
 	}
 
+	/**
+	 * Attempts to move the card by stage.
+	 * @param ghostCard - The ghost card object.
+	 * @param checkMode - The check mode.
+	 * @param index - The index of the card.
+	 * @param stackPosition - The stack position of the card.
+	 * @returns True if a drop occurred, false otherwise.
+	 */
 	function tryMoveCardByStage(
 		ghostCard: GhostCardType,
 		checkMode: CheckIsValidDropMode,
@@ -114,6 +129,12 @@
 		return hasDrop;
 	}
 
+	/**
+	 * Handles the click event on a card.
+	 * @param event - The click event.
+	 * @param index - The index of the card.
+	 * @param stackPosition - The stack position of the card.
+	 */
 	function handleClick(
 		event: MouseEvent & {
 			currentTarget: EventTarget & HTMLButtonElement;
@@ -189,6 +210,13 @@
 	}
 
 	// Handle drag start
+	/**
+	 * Handles the drag start event.
+	 * @param event - The drag event.
+	 * @param card - The card being dragged.
+	 * @param index - The index of the card.
+	 * @param stackPosition - The stack position of the card.
+	 */
 	function handleDragStart(event: DragEvent, card: CardType, index: number, stackPosition: number) {
 		isBeingDragged = true;
 
@@ -208,13 +236,7 @@
 		// Set data to identify the card during drag
 		if (event.dataTransfer) {
 			event.dataTransfer.clearData();
-			// event.dataTransfer.setData(
-			// 	'text/plain',
-			// 	JSON.stringify({
-			// 		// cardId: card.id,
-			// 		fromIndex: index
-			// 	})
-			// );
+
 			// Set drag image and effects
 			if (cardSystemElem) {
 				const htmlElemRect = htmlElem.getBoundingClientRect();
@@ -251,12 +273,21 @@
 	}
 
 	// Handle drop
+	/**
+	 * Handles the drop event.
+	 * @param event - The drop event.
+	 */
 	function handleDrop(event: DragEvent) {
 		event.preventDefault();
 
 		moveItems();
 	}
 
+	/**
+	 * Handles the drag over event.
+	 * @param event - The drag event.
+	 * @param index - The index of the card.
+	 */
 	function handleDragOver(event: DragEvent, index: number) {
 		const newCardStack = eventStore.cards.display[index];
 		let isValidToDrop = checkIsValidDrop(newCardStack, draggedCards);
@@ -269,15 +300,25 @@
 		}
 	}
 
+	/**
+	 * Handles the drag end event.
+	 */
 	function handleDragEnd() {
 		// Reset drag state
 		resetStatus();
 	}
 
+	/**
+	 * Handles the drag leave event.
+	 */
 	function handleDragLeave() {
 		dragOverIndex = -1;
 	}
 
+	/**
+	 * Handles the document mouse move event.
+	 * @param event - The mouse event.
+	 */
 	const handleDocumentMouseMove = (event: MouseEvent) => {
 		if (isBeingDragged) {
 			event.preventDefault();
@@ -285,12 +326,23 @@
 		}
 	};
 
+	/**
+	 * Handles the document mouse up event.
+	 * @param event - The mouse event.
+	 */
 	const handleDocumentMouseUp = (event: MouseEvent) => {
 		// Find the target slot by position
 		if (!isBeingDragged) return;
 	};
 
 	// Touch event handlers for mobile/touch support
+	/**
+	 * Handles the touch start event.
+	 * @param event - The touch event.
+	 * @param card - The card being touched.
+	 * @param index - The index of the card.
+	 * @param stackPosition - The stack position of the card.
+	 */
 	const handleTouchStart = (
 		event: TouchEvent,
 		card: CardType,
@@ -332,6 +384,9 @@
 		cardWidth = htmlElem.clientWidth;
 	};
 
+	/**
+	 * Resets the drag status.
+	 */
 	function resetStatus() {
 		draggedCards.forEach((dcard) => {
 			dcard.isBeingDragged = false;
@@ -349,6 +404,11 @@
 	}
 
 	// Find which slot is under the touch point at the end
+	/**
+	 * Finds the touch slot under the current drag position.
+	 * @param currentDragPosition - The current drag position.
+	 * @returns The index of the touch slot, or -1 if no slot is found.
+	 */
 	function findTouchSlot(currentDragPosition: Position) {
 		const { x, y } = currentDragPosition;
 		const elements = document.elementsFromPoint(x, y);
@@ -363,6 +423,10 @@
 		return -1;
 	}
 
+	/**
+	 * Handles the touch end event.
+	 * @param event - The touch event.
+	 */
 	const handleTouchEnd = (event: TouchEvent) => {
 		if (!isTouchedStarted) return;
 

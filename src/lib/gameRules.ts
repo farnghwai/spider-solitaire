@@ -1,6 +1,11 @@
 import type { CardType, GameState, CheckIsValidDropMode } from '$lib/types';
 import { CARD_VALUES } from '$lib/constants';
 
+/**
+ * Checks if a card stack represents a complete suit (Ace to King) in order
+ * @param currentCardStack Array of card objects representing the stack
+ * @returns Boolean indicating if the stack is a complete suit
+ */
 export function checkIfIsCompleteSuitStack(currentCardStack: CardType[]) {
 	if (currentCardStack.length === 0 || currentCardStack.length < CARD_VALUES.length) {
 		return false;
@@ -19,6 +24,11 @@ export function checkIfIsCompleteSuitStack(currentCardStack: CardType[]) {
 	return isValid;
 }
 
+/**
+ * Determines if the game is won by comparing completed cards to total deck
+ * @param store Game state object containing completed cards and total deck count
+ * @returns Boolean indicating if the game is won
+ */
 export function checkIfIsWinning(store: GameState) {
 	const completedCount = store.cards.completed.length - 1; // exclude empty slot for animation used.
 
@@ -29,6 +39,13 @@ export function checkIfIsWinning(store: GameState) {
 	return false;
 }
 
+/**
+ * Validates if a card can be dropped based on game rules and mode
+ * @param newCardStack Target stack where card is being dropped
+ * @param draggedCards Cards being dragged for the drop
+ * @param checkMode Validation mode ('sameSuitOnly' or default)
+ * @returns Boolean indicating if the drop is valid
+ */
 export function checkIsValidDrop(
 	newCardStack: CardType[],
 	draggedCards: CardType[],

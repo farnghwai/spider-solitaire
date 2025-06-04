@@ -7,13 +7,23 @@
 
 	let { showUndoButton = $bindable() } = $props();
 
+	/**
+	 * Opens the settings dialog.
+	 */
 	function openShowSettingsDialog() {
 		showSettings = true;
 	}
+
+	/**
+	 * Closes the settings dialog.
+	 */
 	function closeDialog() {
 		showSettings = false;
 	}
 
+	/**
+	 * Toggles the visibility of the undo button.
+	 */
 	function handleShowUndoButton() {
 		showUndoButton = !showUndoButton;
 	}
