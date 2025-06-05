@@ -79,6 +79,7 @@ Spider Solitaire is a modern implementation of the classic card game, built with
     - Gemma3 12B
     - Qwen3 8B
       - Generate JSDoc (Primary)
+      - Generate Game Play Guide
     - Qwen 2.5 Code 7B
     - Qwen 2.5 Code 1.5B
     - Devstral 24B (2505) - UD-Q2_K_XL quant
