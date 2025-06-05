@@ -24,17 +24,18 @@
 	const suitSymbol = CardSuit[card.suit].icon;
 
 	const fontSize = $derived.by(() => calculateFontSize(containerWidth));
+	const fontSymbolScaleSize = $derived(fontSize * 0.63);
 </script>
 
 <div
 	role="listitem"
 	aria-grabbed={card.isBeingDragged ? true : false}
 	class={[
-		'flex aspect-7/13 w-full min-w-6 flex-col border border-gray-200 shadow-sm select-none',
+		'flex h-full w-full min-w-6 flex-col border border-gray-200 shadow-sm select-none',
 		'rounded-md @xl:rounded-lg',
 		isDragOver ? 'bg-amber-100' : 'bg-white',
 		CARD_COLORS[CardSuit[card.suit].color],
-		card.isDraggable && 'cursor-grab hover:-translate-y-1 hover:shadow-md',
+		card.isDraggable && 'hover:-translate-y-1 hover:shadow-md',
 		hideWhenPreview && card.isBeingDragged && 'opacity-0',
 		'transition-all duration-300',
 		!card.isOpen && 'rotate-y-180',
@@ -46,20 +47,20 @@
 	ontouchstart={(event: TouchEvent) => onTouchStart?.(event, card, index, stackPosition)}
 >
 	{#if card.isOpen}
-		<div
+		<!-- <div
 			class={['w-full', 'rounded-t-md', 'h-1', card.isDraggable && 'border-t-2 border-t-teal-400']}
 			style="background: repeating-linear-gradient(90deg, #ff9999, #ff9999 3px, white 3px, white 6px);"
-		></div>
+		></div> -->
 		<div class="flex flex-1 flex-col gap-0.5 px-0.5 pb-0.5 @2xl:px-1 @2xl:pb-1">
 			<div class="flex items-center justify-between">
 				<div
-					class="text-(length:--sp-text-size) leading-none font-bold"
+					class="text-(length:--sp-text-size) leading-none font-semibold font-stretch-condensed"
 					style={`--sp-text-size: ${fontSize}px`}
 				>
 					{card.value}
 				</div>
 				<div
-					class="text-(length:--sp-text-size) leading-none transition-all duration-300"
+					class="text-(length:--sp-text-size) leading-none"
 					style={`--sp-text-size: ${fontSize * 0.9}px`}
 				>
 					{#if !isLastStackPosition}
@@ -73,7 +74,7 @@
 						'flex flex-1 flex-col items-center justify-between',
 						'text-(length:--sp-text-size) leading-none'
 					]}
-					style={`--sp-text-size: ${fontSize * 0.75}px`}
+					style={`--sp-text-size: ${fontSymbolScaleSize}px`}
 				>
 					<div>{suitSymbol}</div>
 					{#if card.value === '3'}
@@ -95,30 +96,28 @@
 				<div
 					class={[
 						'items-between relative flex flex-1 flex-col justify-between',
-						'text-(length:--sp-text-size) leading-none'
+						'text-(length:--sp-text-size) leading-none lining-nums'
 					]}
-					style={`--sp-text-size: ${fontSize * 0.75}px`}
+					style={`--sp-text-size: ${fontSymbolScaleSize}px`}
 				>
-					<div class={['flex justify-between']}>
+					<div class="flex justify-between">
 						<div>{suitSymbol}</div>
 						<div>{suitSymbol}</div>
 					</div>
 					{#if card.value === '5'}
-						<div class={['flex justify-center']}>
-							<div>{suitSymbol}</div>
-						</div>
+						<div class="flex justify-center">{suitSymbol}</div>
 					{:else if ['6', '7', '8', '9', '10'].includes(card.value)}
-						<div class={['flex justify-between']}>
+						<div class="flex justify-between">
 							<div>{suitSymbol}</div>
 							<div>{suitSymbol}</div>
 						</div>
 					{/if}
-					<div class={['flex rotate-x-180 justify-between']}>
+					<div class="flex rotate-x-180 justify-between">
 						<div>{suitSymbol}</div>
 						<div>{suitSymbol}</div>
 					</div>
 					{#if ['9', '10'].includes(card.value)}
-						<div class={['flex rotate-x-180 justify-between']}>
+						<div class="flex rotate-x-180 justify-between">
 							<div>{suitSymbol}</div>
 							<div>{suitSymbol}</div>
 						</div>
@@ -144,16 +143,16 @@
 						'flex flex-1 items-center justify-center',
 						'text-(length:--sp-text-size) leading-none'
 					]}
-					style={`--sp-text-size: ${fontSize * 2.5}px`}
+					style={`--sp-text-size: ${fontSize * 2}px`}
 				>
 					{suitSymbol}
 				</div>
 			{/if}
 		</div>
-		<div
+		<!-- <div
 			class={['w-full', 'rounded-b-md', 'h-1']}
 			style="background: repeating-linear-gradient(90deg, #ff9999, #ff9999 3px, white 3px, white 6px);"
-		></div>
+		></div> -->
 	{:else}
 		<PokerCardCover class={'rotate-y-180'} />
 	{/if}

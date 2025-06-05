@@ -18,13 +18,13 @@
 
 <div
 	{id}
-	class="pointer-events-none fixed z-[9999] flex items-center"
+	class="pointer-events-none fixed z-50 flex items-center"
 	style={`left: ${dragPosition.x}px; top: ${dragPosition.y}px`}
 >
 	<div class="relative flex aspect-7/11 flex-col">
 		{#each cards as card, stackPosition (card.id)}
 			<div
-				class={['absolute', 'w-full scale-90', 'top-(--stackOffset)']}
+				class={['absolute', 'h-full w-full', 'top-(--stackOffset)']}
 				style={`z-index: 100 - ${stackPosition}; --stackOffset: ${stackPosition * cardOffsetHeight}px;`}
 				style:height={`${cardHeight}px`}
 				style:width={`${cardWidth}px`}

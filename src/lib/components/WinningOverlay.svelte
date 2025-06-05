@@ -5,6 +5,9 @@
 	let showWinAnimation = $derived(eventStore.hasWin);
 
 	// Event handlers
+	/**
+	 * Handles the confirmation to start a new game.
+	 */
 	function handleConfirmNewGame() {
 		handleConfirm();
 	}

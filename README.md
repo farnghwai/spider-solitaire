@@ -1,6 +1,9 @@
 # Spider Solitaire
 [![Deploy to GitHub Pages](https://github.com/farnghwai/spider-solitaire/actions/workflows/deploy.yml/badge.svg)](https://github.com/farnghwai/spider-solitaire/actions/workflows/deploy.yml)
 
+## Overview
+Spider Solitaire is a modern implementation of the classic card game, built with Svelte 5 and SvelteKit 2 for fast frontend performance. This PWA (Progressive Web App) offers a responsive design that works seamlessly on desktop and mobile devices, including touch screen support. The game features a complete card deck, undo functionality, winning animations, and customizable settings. Developed with TypeScript and Tailwind CSS 4.1 for styling, it's hosted on GitHub Pages with automated deployment via GitHub Actions.
+
 ## Features
 - [x] Completed Card deck
 - [x] Undo
@@ -11,12 +14,12 @@
 - [X] Touch Screen
 - [x] Progressive Web App (PWA)
 - [x] Flip card
-- [ ] Card Pattern
+- [x] Card Pattern
 
 ## Known Issues
 1. Rendering not work well in Safari browser.
 2. Trigger Android Protect Scanning when try install as PWA.
-3. Manual ovveride vulnerable versions of cookie 0.6.0 used by current @sveltejs/kit to 0.7.0 
+3. Manual override vulnerable versions of cookie 0.6.0 used by current @sveltejs/kit to 0.7.0 
   - https://github.com/sveltejs/kit/pull/12767#issuecomment-2402562640
 
 ## Technology Stacks
@@ -71,11 +74,17 @@
       - Winning Animation
     - [ChatGPT GPT-4o](https://chatgpt.com/):
       - Undo
+      - Generate J,Q,K image
   - Local
     - Gemma3 12B
     - Qwen3 8B
+      - Generate JSDoc (Primary)
+      - Generate Game Play Guide
     - Qwen 2.5 Code 7B
     - Qwen 2.5 Code 1.5B
+    - Devstral 24B (2505) - UD-Q2_K_XL quant
+      - Generate JSDoc (Experiment)
 - Others
   - Transitions effect - [transitions.ts](https://svelte.dev/tutorial/svelte/animations)
   - Mobile Screen Height handling - [100vh height when address bar is shown - Chrome Mobile](https://stackoverflow.com/questions/52848856/100vh-height-when-address-bar-is-shown-chrome-mobile)
+  - Converting image to svg - [Inskscape](https://inkscape.org/)
