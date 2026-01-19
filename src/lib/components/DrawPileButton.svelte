@@ -17,10 +17,9 @@
 	/**
 	 * Handles click event on draw pile button
 	 * Calculates remaining card count and dispatches drawPile action
-	 * @param event - Mouse click event
 	 * @returns void
 	 */
-	function handleDrawPileClick(event: MouseEvent) {
+	function handleDrawPileClick() {
 		const remaingCount =
 			eventStore.cards.remaining.length < NO_OF_CARD_SLOT
 				? eventStore.cards.remaining.length

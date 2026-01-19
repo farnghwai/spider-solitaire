@@ -19,7 +19,7 @@
 	let cardWidthFontSize = $derived(cardSystemWidth * 0.6);
 	$effect.pre(() => {
 		// reference `winCardStacks` array length so that this code re-runs whenever it changes
-		eventStore.cards.completed.length;
+		void eventStore.cards.completed.length;
 
 		tick().then(() => {});
 	});
@@ -27,7 +27,7 @@
 
 <div class="flex flex-1 items-center @2xl:flex-col">
 	<div class={['grid grid-flow-col @2xl:grid-flow-row', RESPONSIVE_CLASS.GAP_SIZE]}>
-		{#each eventStore.cards.completed as stackedCards, index}
+		{#each eventStore.cards.completed as stackedCards, index (index)}
 			<div
 				role="list"
 				class={[

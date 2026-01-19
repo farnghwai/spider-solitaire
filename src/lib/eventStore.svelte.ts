@@ -166,10 +166,9 @@ const handlers: HanderType = {
 	/**
 	 * Handles the win action
 	 * @param state - Current state
-	 * @param action - Action payload
 	 * @returns Updated state
 	 */
-	win: (state, action) => {
+	win: (state) => {
 		eventStore.hasWin = true;
 		return { ...state };
 	}
@@ -185,7 +184,20 @@ function rebuildState(): CardStatus {
 	populateInitCardStacksTo(newState);
 
 	for (const action of eventStore.history) {
-		newState = handlers[action.type](newState, action as any); // safe due to rebuild from history
+		switch (action.type) {
+			case 'drawPile':
+				newState = handlers.drawPile(newState, action);
+				break;
+			case 'move':
+				newState = handlers.move(newState, action);
+				break;
+			case 'deckCompleted':
+				newState = handlers.deckCompleted(newState, action);
+				break;
+			case 'win':
+				newState = handlers.win(newState, action);
+				break;
+		}
 	}
 
 	newState.display.forEach((currentCardStack) => {

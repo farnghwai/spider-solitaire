@@ -183,7 +183,7 @@ export function initNewGameSession() {
 
 	initCardStacks.display.forEach((currentStack) => {
 		const currentStackCount = currentStack.length;
-		let currentStackLastCard = currentStack[currentStackCount - 1];
+		const currentStackLastCard = currentStack[currentStackCount - 1];
 		currentStackLastCard.isDraggable = true;
 		currentStackLastCard.isOpen = true;
 	});

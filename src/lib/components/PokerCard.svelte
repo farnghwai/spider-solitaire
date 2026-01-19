@@ -21,7 +21,7 @@
 		onTouchStart,
 		class: className
 	}: PokerCardProps = $props();
-	const suitSymbol = CardSuit[card.suit].icon;
+	const suitSymbol = $derived(CardSuit[card.suit].icon);
 
 	const fontSize = $derived.by(() => calculateFontSize(containerWidth));
 	const fontSymbolScaleSize = $derived(fontSize * 0.63);
@@ -43,7 +43,7 @@
 	]}
 	draggable={card.isDraggable}
 	ondragstart={(event: DragEvent) => onDragStart?.(event, card, index, stackPosition)}
-	ondragend={(event: DragEvent) => onDragEnd?.()}
+	ondragend={() => onDragEnd?.()}
 	ontouchstart={(event: TouchEvent) => onTouchStart?.(event, card, index, stackPosition)}
 >
 	{#if card.isOpen}
@@ -154,6 +154,6 @@
 			style="background: repeating-linear-gradient(90deg, #ff9999, #ff9999 3px, white 3px, white 6px);"
 		></div> -->
 	{:else}
-		<PokerCardCover class={'rotate-y-180'} />
+		<PokerCardCover class="rotate-y-180" />
 	{/if}
 </div>

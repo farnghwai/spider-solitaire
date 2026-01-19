@@ -12,7 +12,7 @@ export function checkIfIsCompleteSuitStack(currentCardStack: CardType[]) {
 	}
 
 	let isValid = true;
-	let currentCardStackLastIndex = currentCardStack.length - 1;
+	const currentCardStackLastIndex = currentCardStack.length - 1;
 	const lastSuit = currentCardStack[currentCardStackLastIndex].suit;
 	for (let i = 0, j = currentCardStackLastIndex; i < CARD_VALUES.length && j >= 0; i++, j--) {
 		if (CARD_VALUES[i] !== currentCardStack[j].value || lastSuit !== currentCardStack[j].suit) {
@@ -71,12 +71,13 @@ export function checkIsValidDrop(
 	}
 
 	switch (checkMode) {
-		case 'sameSuitOnly':
+		case 'sameSuitOnly': {
 			const matchedSuit = newLastCard.suit === dragedfirstCard.suit;
 			if (matchedSuit) {
 				isValidToDrop = true;
 			}
 			break;
+		}
 		default: {
 			isValidToDrop = true;
 		}
