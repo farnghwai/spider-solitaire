@@ -85,6 +85,9 @@ Spider Solitaire is a modern implementation of the classic card game, built with
     - [ChatGPT GPT-4o](https://chatgpt.com/):
       - Undo
       - Generate J,Q,K image
+    - [Google Gemini 3](https://deepmind.google/technologies/gemini/):
+      - Dependency updates (security fixes)
+      - Linting & Type safety improvements
   - Local
     - Gemma3 12B
     - Qwen3 8B
