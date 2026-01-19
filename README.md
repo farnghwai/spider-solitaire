@@ -1,28 +1,34 @@
 # Spider Solitaire
+
 [![Deploy to GitHub Pages](https://github.com/farnghwai/spider-solitaire/actions/workflows/deploy.yml/badge.svg)](https://github.com/farnghwai/spider-solitaire/actions/workflows/deploy.yml)
 
 ## Overview
+
 Spider Solitaire is a modern implementation of the classic card game, built with Svelte 5 and SvelteKit 2 for fast frontend performance. This PWA (Progressive Web App) offers a responsive design that works seamlessly on desktop and mobile devices, including touch screen support. The game features a complete card deck, undo functionality, winning animations, and customizable settings. Developed with TypeScript and Tailwind CSS 4.1 for styling, it's hosted on GitHub Pages with automated deployment via GitHub Actions.
 
 ## Features
+
 - [x] Completed Card deck
 - [x] Undo
 - [x] Winning Animation
 - [x] Settings
-- [X] Github Pages
-- [X] Mobile Responsive Design
-- [X] Touch Screen
+- [x] Github Pages
+- [x] Mobile Responsive Design
+- [x] Touch Screen
 - [x] Progressive Web App (PWA)
 - [x] Flip card
 - [x] Card Pattern
 
 ## Known Issues
+
 1. Rendering not work well in Safari browser.
 2. Trigger Android Protect Scanning when try install as PWA.
-3. Manual override vulnerable versions of cookie 0.6.0 used by current @sveltejs/kit to 0.7.0 
-  - https://github.com/sveltejs/kit/pull/12767#issuecomment-2402562640
+3. Manual override vulnerable versions of cookie 0.6.0 used by current @sveltejs/kit to 0.7.0
+
+- https://github.com/sveltejs/kit/pull/12767#issuecomment-2402562640
 
 ## Technology Stacks
+
 - Hosting
   - Github Pages & Actions
 - Frontend
@@ -35,31 +41,35 @@ Spider Solitaire is a modern implementation of the classic card game, built with
   - Formatting - Prettier
 
 ## Workspace Setup
+
 ### VS Code Extensions
+
 1. Prettier - Code formatter
 2. Svelte for VS Code
 3. Tailwind CSS IntelliSense
 
 ### VS Code Workspace Configuration (.vscode/settings.json)
+
 ```json
 {
-    "[typescript]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode",
-        "editor.formatOnSave": true
-    },
-    "[svelte]": {
-        "editor.defaultFormatter": "svelte.svelte-vscode",
-        "editor.formatOnSave": true
-    },
+	"[typescript]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode",
+		"editor.formatOnSave": true
+	},
+	"[svelte]": {
+		"editor.defaultFormatter": "svelte.svelte-vscode",
+		"editor.formatOnSave": true
+	}
 }
 ```
 
-## Github Pages 
+## Github Pages
+
 1. Refer [Configuring a publishing source for your GitHub Pages site](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site) to change the Build and Deployment source to **Github Actions**.
 
-
 ## References
-- Documentations 
+
+- Documentations
   - [Svelte 5](https://svelte.dev/docs/svelte/overview)
   - [SvelteKit 2](https://svelte.dev/docs/kit/introduction)
   - [Tailwind CSS 4.1](https://tailwindcss.com/docs/installation/using-vite)

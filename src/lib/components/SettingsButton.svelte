@@ -122,8 +122,8 @@
 							<strong>Disclaimer:</strong> This is a demonstration application provided free for use.
 							All data from your interaction with this application is stored locally in your browser.
 							While this application itself does not collect personal information, please note that GitHub
-							Pages, which hosts this application, may collect certain data such as IP addresses and
-							usage metrics as part of their standard operations.
+							Pages, which hosts this application, may collect certain data such as IP addresses and usage
+							metrics as part of their standard operations.
 						</div>
 
 						<div class="mb-2">
@@ -138,15 +138,14 @@
 							(including, but not limited to, procurement of substitute goods or services; loss of use,
 							data, or profits; or business interruption) however caused and on any theory of liability,
 							whether in contract, strict liability, or tort (including negligence or otherwise) arising
-							in any way out of the use of this software, even if advised of the possibility of such
-							damage.
+							in any way out of the use of this software, even if advised of the possibility of such damage.
 						</div>
 
 						<div class="mt-3 border-t border-gray-200 pt-2">
 							<a
 								href={GITHUB_REPO}
 								target="_blank"
-								rel="noopener noreferrer"
+								rel="noopener noreferrer external"
 								class="flex items-center text-blue-500 underline hover:text-blue-700"
 							>
 								<svg

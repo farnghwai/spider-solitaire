@@ -11,7 +11,7 @@
 		CheckIsValidDropMode
 	} from '$lib/types';
 	import { eventStore, dispatch } from '$lib/eventStore.svelte';
-	import { RESPONSIVE_CLASS, NO_OF_CARD_SLOT } from '$lib/constants';
+	import { RESPONSIVE_CLASS } from '$lib/constants';
 	import { checkIfIsCompleteSuitStack, checkIfIsWinning, checkIsValidDrop } from '$lib/gameRules';
 	import { calculateFontSize } from '../shared.svelte';
 
@@ -25,7 +25,6 @@
 	let draggedIndex = $state(-1);
 	let draggedStackPosition = $state(-1);
 	let dragOverIndex = $state(-1);
-	let isBeingDragged = $state(false);
 
 	let dragPosition = $state<Position>({ x: 0, y: 0 });
 	let offsetPosition = $state<Position>({ x: 0, y: 0 });
@@ -218,8 +217,6 @@
 	 * @param stackPosition - The stack position of the card.
 	 */
 	function handleDragStart(event: DragEvent, card: CardType, index: number, stackPosition: number) {
-		isBeingDragged = true;
-
 		let selectedCardStack = eventStore.cards.display[index];
 		draggedCards = selectedCardStack.slice(stackPosition);
 		draggedCards.forEach((dcard) => {
@@ -315,26 +312,6 @@
 		dragOverIndex = -1;
 	}
 
-	/**
-	 * Handles the document mouse move event.
-	 * @param event - The mouse event.
-	 */
-	const handleDocumentMouseMove = (event: MouseEvent) => {
-		if (isBeingDragged) {
-			event.preventDefault();
-			dragPosition = { x: event.clientX, y: event.clientY };
-		}
-	};
-
-	/**
-	 * Handles the document mouse up event.
-	 * @param event - The mouse event.
-	 */
-	const handleDocumentMouseUp = (event: MouseEvent) => {
-		// Find the target slot by position
-		if (!isBeingDragged) return;
-	};
-
 	// Touch event handlers for mobile/touch support
 	/**
 	 * Handles the touch start event.
@@ -400,7 +377,6 @@
 		draggedStackPosition = -1;
 
 		dragOverIndex = -1;
-		isBeingDragged = false;
 	}
 
 	// Find which slot is under the touch point at the end
@@ -425,9 +401,8 @@
 
 	/**
 	 * Handles the touch end event.
-	 * @param event - The touch event.
 	 */
-	const handleTouchEnd = (event: TouchEvent) => {
+	const handleTouchEnd = () => {
 		if (!isTouchedStarted) return;
 
 		isTouchedStarted = false;
@@ -485,7 +460,7 @@
 		bind:offsetWidth={cardSystemWidth}
 		class={['flex flex-1 justify-center', RESPONSIVE_CLASS.GAP_SIZE]}
 	>
-		{#each eventStore.cards.display as stackedCards, index}
+		{#each eventStore.cards.display as stackedCards, index (index)}
 			{@const lastStackPosition = stackedCards.length - 1}
 			<div class="min-w-6 flex-1">
 				<div
