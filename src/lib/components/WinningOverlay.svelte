@@ -16,7 +16,7 @@
 		// Hide winning animation after 3 seconds
 		let timerId: number;
 		if (showWinAnimation) {
-			timerId = setTimeout(() => {
+			timerId = window.setTimeout(() => {
 				showWinAnimation = false;
 			}, 3000);
 		}
