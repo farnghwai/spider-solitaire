@@ -196,9 +196,8 @@
 			}
 		};
 
-		let i = 0;
 		const stages: CheckIsValidDropMode[] = ['sameSuitOnly', 'emptySlotLast', undefined];
-		for (i = 0; i < stages.length; i++) {
+		for (let i = 0; i < stages.length; i++) {
 			const hasDrop = tryMoveCardByStage(ghostCard, stages[i], index, stackPosition);
 			if (hasDrop) {
 				break;
