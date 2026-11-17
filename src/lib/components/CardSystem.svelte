@@ -9,10 +9,14 @@
 		CardSystemProps,
 		GhostCardType,
 		CheckIsValidDropMode
-	} from '$lib/types';
-	import { eventStore, dispatch } from '$lib/eventStore.svelte';
-	import { RESPONSIVE_CLASS } from '$lib/constants';
-	import { checkIfIsCompleteSuitStack, checkIfIsWinning, checkIsValidDrop } from '$lib/gameRules';
+	} from '#lib/types.ts';
+	import { eventStore, dispatch } from '#lib/eventStore.svelte.ts';
+	import { RESPONSIVE_CLASS } from '#lib/constants.ts';
+	import {
+		checkIfIsCompleteSuitStack,
+		checkIfIsWinning,
+		checkIsValidDrop
+	} from '#lib/gameRules.ts';
 	import { calculateFontSize } from '../shared.svelte';
 
 	import CardPreview from './CardPreview.svelte';

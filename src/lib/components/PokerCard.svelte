@@ -1,8 +1,8 @@
 <!-- src/lib/components/PokerCard.svelte -->
 <script lang="ts">
 	import { CardSuit, calculateFontSize } from '../shared.svelte';
-	import type { PokerCardProps } from '$lib/types';
-	import { CARD_COLORS } from '$lib/constants';
+	import type { PokerCardProps } from '#lib/types.ts';
+	import { CARD_COLORS } from '#lib/constants.ts';
 	import PokerCardCover from './PokerCardCover.svelte';
 	import PokerCardJack from './PokerCardJack.svelte';
 	import PokerCardQueen from './PokerCardQueen.svelte';

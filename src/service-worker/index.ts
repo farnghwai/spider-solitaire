@@ -1,21 +1,17 @@
-/// <reference types="@sveltejs/kit" />
-/// <reference no-default-lib="true"/>
-/// <reference lib="esnext" />
-/// <reference lib="webworker" />
-
-const sw = /** @type {ServiceWorkerGlobalScope} */ (/** @type {unknown} */ (self));
-
-import { build, files, version } from '$service-worker';
+import { self } from '$app/service-worker';
+import { version } from '$app/env';
+import { immutable, assets } from '$app/manifest';
+import { asset, resolve } from '$app/paths';
 
 // Create a unique cache name for this deployment
 const CACHE = `cache-${version}`;
 
 const ASSETS = [
-	...build, // the app itself
-	...files // everything in `static`
+	...immutable.map(({ path }) => path), // the app itself
+	...assets.map(({ path }) => asset(path)) // everything in `static`
 ];
 
-sw.addEventListener('install', (event) => {
+self.addEventListener('install', (event) => {
 	// Create a new cache and add all files to it
 	async function addFilesToCache() {
 		const cache = await caches.open(CACHE);
@@ -25,7 +21,7 @@ sw.addEventListener('install', (event) => {
 	event.waitUntil(addFilesToCache());
 });
 
-sw.addEventListener('activate', (event) => {
+self.addEventListener('activate', (event) => {
 	// Remove previous cached data from disk
 	async function deleteOldCaches() {
 		for (const key of await caches.keys()) {
@@ -36,7 +32,7 @@ sw.addEventListener('activate', (event) => {
 	event.waitUntil(deleteOldCaches());
 });
 
-sw.addEventListener('fetch', (event) => {
+self.addEventListener('fetch', (event) => {
 	// ignore POST requests etc
 	if (event.request.method !== 'GET') return;
 
@@ -64,12 +60,13 @@ sw.addEventListener('fetch', (event) => {
 				throw new Error('invalid response from fetch');
 			}
 
-			if (response.status === 200) {
+			if (response.status === 200 && !response.headers.get('cache-control')?.includes('no-store')) {
+				// ...and cache responses in the background for next time....
 				cache.put(event.request, response.clone());
 			}
 
 			return response;
-		} catch (err) {
+		} catch (error) {
 			const response = await cache.match(event.request);
 
 			if (response) {
@@ -78,7 +75,7 @@ sw.addEventListener('fetch', (event) => {
 
 			// if there's no cache, then just error out
 			// as there is nothing we can do to respond to this request
-			throw err;
+			throw error;
 		}
 	}
 

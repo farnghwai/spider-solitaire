@@ -1,11 +1,11 @@
 import type { CardType, CardSuitKeyType, CardSuitRecordType, CardColorKeyType } from './types';
-import { CARD_COLORS, NO_OF_CARD_SLOT, CARD_VALUES } from '$lib/constants';
+import { CARD_COLORS, NO_OF_CARD_SLOT, CARD_VALUES } from '#lib/constants.ts';
 import {
 	initCardStacks,
 	eventStore,
 	resetInitCardStacksAndEventStore,
 	populateInitCardStacksTo
-} from '$lib/eventStore.svelte';
+} from '#lib/eventStore.svelte.ts';
 
 export const CardSuit: Record<CardSuitKeyType, CardSuitRecordType> = {
 	spade: { icon: '♠', color: 'BLACK' },

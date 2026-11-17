@@ -1,6 +1,6 @@
 <!-- src/lib/components/PokerCardCover.svelte -->
 <script lang="ts">
-	import type { PokerCardCoverProps } from '$lib/types';
+	import type { PokerCardCoverProps } from '#lib/types.ts';
 
 	const { cardBalance = 0, class: className }: PokerCardCoverProps = $props();
 </script>

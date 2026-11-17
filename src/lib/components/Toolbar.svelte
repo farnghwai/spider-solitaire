@@ -1,10 +1,10 @@
 <!-- src/lib/components/Toolbar.svelte -->
 <script lang="ts">
-	import SettingsButton from '$lib/components/SettingsButton.svelte';
-	import GameNewButton from '$lib/components/GameNewButton.svelte';
-	import UndoButton from '$lib/components/UndoButton.svelte';
-	import GamePlayGuide from '$lib/components/GamePlayGuide.svelte';
-	import { RESPONSIVE_CLASS } from '$lib/constants';
+	import SettingsButton from '#lib/components/SettingsButton.svelte';
+	import GameNewButton from '#lib/components/GameNewButton.svelte';
+	import UndoButton from '#lib/components/UndoButton.svelte';
+	import GamePlayGuide from '#lib/components/GamePlayGuide.svelte';
+	import { RESPONSIVE_CLASS } from '#lib/constants.ts';
 
 	let { handleConfirm } = $props();
 	let showUndoButton = $state(true);

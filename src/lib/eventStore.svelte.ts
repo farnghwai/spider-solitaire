@@ -1,6 +1,6 @@
 // eventStore.ts
 import { updateDraggableStatus } from './shared.svelte';
-import { NO_OF_CARD_SLOT, CARD_VALUES } from '$lib/constants';
+import { NO_OF_CARD_SLOT, CARD_VALUES } from '#lib/constants.ts';
 import type { GameState, Action, CardStatus, HanderType, CardType } from './types';
 
 export const initCardStacks = $state<CardStatus>({

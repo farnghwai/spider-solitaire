@@ -1,15 +1,15 @@
 <script lang="ts">
-	import { base } from '$app/paths';
+	import { resolve } from '$app/paths';
 
 	import { onMount, tick } from 'svelte';
-	import { initNewGameSession } from '$lib/shared.svelte';
-	import { initCardStacks } from '$lib/eventStore.svelte';
+	import { initNewGameSession } from '#lib/shared.svelte.ts';
+	import { initCardStacks } from '#lib/eventStore.svelte.ts';
 
-	import CardSystem from '$lib/components/CardSystem.svelte';
-	import CompletedDeck from '$lib/components/CompletedDeck.svelte';
-	import DrawPileButton from '$lib/components/DrawPileButton.svelte';
-	import Toolbar from '$lib/components/Toolbar.svelte';
-	import WinningOverlay from '$lib/components/WinningOverlay.svelte';
+	import CardSystem from '#lib/components/CardSystem.svelte';
+	import CompletedDeck from '#lib/components/CompletedDeck.svelte';
+	import DrawPileButton from '#lib/components/DrawPileButton.svelte';
+	import Toolbar from '#lib/components/Toolbar.svelte';
+	import WinningOverlay from '#lib/components/WinningOverlay.svelte';
 
 	let isLoading = $state(false);
 	let cardSystemWidth = $state(0);
@@ -40,7 +40,7 @@
 
 <svelte:head>
 	<title>{`${title} - A Simple & Classic Card Game`}</title>
-	<link rel="manifest" href="{base}/manifest.webmanifest" />
+
 	<meta
 		name="description"
 		content="Experience the classic Spider Solitaire card game with a simple design. Play for free online as a demo application—perfect for casual gamers seeking a relaxing, single-player mind challenge."
@@ -86,8 +86,8 @@
 			</div>
 		</div>
 	{/if}
+
 	<!-- Toolbar -->
 	<Toolbar {handleConfirm} />
-
 	<WinningOverlay {handleConfirm} />
 </div>

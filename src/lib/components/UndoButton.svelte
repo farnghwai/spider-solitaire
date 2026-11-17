@@ -1,6 +1,6 @@
 <!-- src/lib/components/UndoButton.svelte -->
 <script lang="ts">
-	import { undo } from '$lib/eventStore.svelte';
+	import { undo } from '#lib/eventStore.svelte.ts';
 
 	function handleUndo() {
 		undo();
