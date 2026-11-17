@@ -41,8 +41,6 @@
 <svelte:head>
 	<title>{`${title} - A Simple & Classic Card Game`}</title>
 
-	<link rel="manifest" href="{resolve('')}/manifest.webmanifest" />
-
 	<meta
 		name="description"
 		content="Experience the classic Spider Solitaire card game with a simple design. Play for free online as a demo application—perfect for casual gamers seeking a relaxing, single-player mind challenge."
