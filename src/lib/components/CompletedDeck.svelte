@@ -4,10 +4,10 @@
 	import { flip } from 'svelte/animate';
 	import { receive, send } from './transition';
 
-	import { eventStore } from '$lib/eventStore.svelte';
-	import { RESPONSIVE_CLASS } from '$lib/constants';
+	import { eventStore } from '#lib/eventStore.svelte.ts';
+	import { RESPONSIVE_CLASS } from '#lib/constants.ts';
 	import PokerCard from './PokerCard.svelte';
-	import { NO_OF_CARD_SLOT } from '$lib/constants';
+	import { NO_OF_CARD_SLOT } from '#lib/constants.ts';
 
 	let { cardSystemWidth } = $props();
 	let cardWidthEstimatedSize = $derived.by(() => {

@@ -1,6 +1,6 @@
 <!-- src/lib/components/CardPreview.svelte -->
 <script lang="ts">
-	import type { CardPreviewProps } from '$lib/types';
+	import type { CardPreviewProps } from '#lib/types.ts';
 
 	import PokerCard from './PokerCard.svelte';
 

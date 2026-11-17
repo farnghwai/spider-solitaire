@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { eventStore } from '$lib/eventStore.svelte';
+	import { eventStore } from '#lib/eventStore.svelte.ts';
 	let { handleConfirm } = $props();
 
 	let showWinAnimation = $derived(eventStore.hasWin);

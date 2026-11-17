@@ -1,5 +1,5 @@
-import type { CardType, GameState, CheckIsValidDropMode } from '$lib/types';
-import { CARD_VALUES } from '$lib/constants';
+import type { CardType, GameState, CheckIsValidDropMode } from '#lib/types.ts';
+import { CARD_VALUES } from '#lib/constants.ts';
 
 /**
  * Checks if a card stack represents a complete suit (Ace to King) in order

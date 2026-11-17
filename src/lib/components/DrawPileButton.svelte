@@ -2,8 +2,8 @@
 <script lang="ts">
 	import { flip } from 'svelte/animate';
 	import { send, receive } from './transition';
-	import { eventStore, dispatch } from '$lib/eventStore.svelte';
-	import { NO_OF_CARD_SLOT } from '$lib/constants';
+	import { eventStore, dispatch } from '#lib/eventStore.svelte.ts';
+	import { NO_OF_CARD_SLOT } from '#lib/constants.ts';
 
 	import PokerCard from './PokerCard.svelte';
 	import PokerCardCover from './PokerCardCover.svelte';

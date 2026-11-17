@@ -39,5 +39,9 @@
 		"typescript-eslint": "^8.59.2",
 		"vite": "^8.0.16"
 	},
-	"overrides": {}
+	"overrides": {},
+	"imports": {
+		"#lib": "./src/lib/index.js",
+		"#lib/*": "./src/lib/*"
+	}
 }
