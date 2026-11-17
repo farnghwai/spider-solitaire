@@ -5,14 +5,16 @@
 
 const sw = /** @type {ServiceWorkerGlobalScope} */ (/** @type {unknown} */ (self));
 
-import { build, files, version } from '$service-worker';
+import { version as APP_VERSION } from '$app/env';
+import { immutable, assets } from '$app/manifest';
+import { asset } from '$app/paths';
 
 // Create a unique cache name for this deployment
-const CACHE = `cache-${version}`;
+const CACHE = `cache-${APP_VERSION}`;
 
 const ASSETS = [
-	...build, // the app itself
-	...files // everything in `static`
+	...immutable.map(({ path }) => path), // the app itself
+	...assets.map(({ path }) => asset(path)) // everything in `static`
 ];
 
 sw.addEventListener('install', (event) => {
