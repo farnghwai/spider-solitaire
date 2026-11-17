@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { base } from '$app/paths';
+	import { resolve } from '$app/paths';
 
 	import { onMount, tick } from 'svelte';
 	import { initNewGameSession } from '$lib/shared.svelte';
@@ -40,7 +40,9 @@
 
 <svelte:head>
 	<title>{`${title} - A Simple & Classic Card Game`}</title>
-	<link rel="manifest" href="{base}/manifest.webmanifest" />
+
+	<link rel="manifest" href="{resolve('')}/manifest.webmanifest" />
+
 	<meta
 		name="description"
 		content="Experience the classic Spider Solitaire card game with a simple design. Play for free online as a demo application—perfect for casual gamers seeking a relaxing, single-player mind challenge."
@@ -86,8 +88,8 @@
 			</div>
 		</div>
 	{/if}
+
 	<!-- Toolbar -->
 	<Toolbar {handleConfirm} />
-
 	<WinningOverlay {handleConfirm} />
 </div>
